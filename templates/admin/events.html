@@ -1,0 +1,52 @@
+{% extends "admin/layout.html" %}
+{% block title %}Events{% endblock %}
+{% block page_title %}Events{% endblock %}
+{% block page_sub %}Manage events shown on the website{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Events</h1>
+  <a class="btn btn-primary" href="/admin/events/new">+ Add Event</a>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th><th>Date</th><th>Time</th><th>Location</th><th>Badge</th><th>Visible</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in events %}
+        <tr>
+          <td style="font-weight:600;color:#fff;max-width:240px">{{ e.title }}</td>
+          <td style="font-family:'Roboto Mono',monospace;font-size:.82rem;white-space:nowrap;color:#7a93c8">
+            {{ e.event_date.strftime('%b %d, %Y') }}
+          </td>
+          <td style="color:#5c6680;font-size:.82rem;white-space:nowrap">{{ e.time_str or '—' }}</td>
+          <td style="color:#5c6680;font-size:.82rem">{{ e.location }}</td>
+          <td><span class="badge badge-{{ e.badge }}">{{ e.badge }}</span></td>
+          <td>
+            <form method="post" action="/admin/events/{{ e.id }}/toggle">
+              <button type="submit" class="btn btn-sm {% if e.active %}btn-success{% else %}btn-ghost{% endif %}">
+                {% if e.active %}✓ On{% else %}Off{% endif %}
+              </button>
+            </form>
+          </td>
+          <td style="white-space:nowrap">
+            <a class="btn btn-ghost btn-sm" href="/admin/events/{{ e.id }}/edit">Edit</a>
+            <form method="post" action="/admin/events/{{ e.id }}/delete" style="display:inline"
+                  onsubmit="return confirm('Delete this event?')">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" style="text-align:center;color:#5c6680;padding:32px">No events yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

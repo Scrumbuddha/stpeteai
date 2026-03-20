@@ -1,0 +1,63 @@
+{% extends "admin/layout.html" %}
+{% block title %}Messages{% endblock %}
+{% block page_title %}Contact Messages{% endblock %}
+{% block page_sub %}{{ contacts|selectattr('read','equalto',False)|list|length }} unread{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Messages</h1>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Date</th><th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in contacts %}
+        <tr style="{% if not c.read %}background:rgba(91,156,246,.04){% endif %}">
+          <td style="font-weight:{% if not c.read %}700{% else %}400{% endif %};color:#fff;white-space:nowrap">
+            {{ c.name }}
+          </td>
+          <td style="color:#7a93c8;font-size:.85rem">{{ c.email }}</td>
+          <td style="color:#5c6680;font-size:.82rem;white-space:nowrap">{{ c.subject }}</td>
+          <td style="max-width:260px">
+            <span style="font-size:.85rem;color:{% if not c.read %}#c0cce8{% else %}#5c6680{% endif %}">
+              {{ c.message[:80] }}{% if c.message|length > 80 %}…{% endif %}
+            </span>
+            {% if c.message|length > 80 %}
+            <span class="msg-toggle" onclick="toggleMsg({{ c.id }})">▼ Read more</span>
+            <div id="msg-{{ c.id }}" class="msg-body">{{ c.message }}</div>
+            {% endif %}
+          </td>
+          <td style="color:#5c6680;font-family:'Roboto Mono',monospace;font-size:.75rem;white-space:nowrap">
+            {{ c.created_at.strftime('%b %d, %Y %H:%M') }}
+          </td>
+          <td>
+            <span class="badge {% if c.read %}badge-read{% else %}badge-unread{% endif %}">
+              {% if c.read %}Read{% else %}Unread{% endif %}
+            </span>
+          </td>
+          <td style="white-space:nowrap">
+            <form method="post" action="/admin/contacts/{{ c.id }}/read" style="display:inline">
+              <button class="btn btn-ghost btn-sm" type="submit">
+                {% if c.read %}Mark Unread{% else %}Mark Read{% endif %}
+              </button>
+            </form>
+            <form method="post" action="/admin/contacts/{{ c.id }}/delete" style="display:inline"
+                  onsubmit="return confirm('Delete this message?')">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" style="text-align:center;color:#5c6680;padding:32px">No messages yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

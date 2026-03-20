@@ -1,0 +1,74 @@
+{% extends "admin/layout.html" %}
+{% block title %}{{ action }} Event{% endblock %}
+{% block page_title %}{{ action }} Event{% endblock %}
+{% block page_sub %}{% if event %}Editing: {{ event.title }}{% else %}Create a new event{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>{{ action }} Event</h1>
+  <a class="btn btn-ghost" href="/admin/events">← Back to Events</a>
+</div>
+
+<div class="card" style="max-width:640px">
+  <form method="post">
+    <div class="form-group">
+      <label for="title">Event Title *</label>
+      <input type="text" id="title" name="title" required
+             value="{{ event.title if event else '' }}"
+             placeholder="e.g. Building Multi-Agent Workflows with Claude Code">
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" name="description"
+                placeholder="Brief description shown on the website...">{{ event.description if event else '' }}</textarea>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="form-group">
+        <label for="event_date">Date *</label>
+        <input type="date" id="event_date" name="event_date" required
+               value="{{ event.event_date.strftime('%Y-%m-%d') if event else '' }}">
+      </div>
+      <div class="form-group">
+        <label for="time_str">Time</label>
+        <input type="text" id="time_str" name="time_str"
+               value="{{ event.time_str if event else '' }}"
+               placeholder="e.g. 6:30 PM EST">
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location"
+               value="{{ event.location if event else 'Online' }}"
+               placeholder="Online or physical address">
+      </div>
+      <div class="form-group">
+        <label for="badge">Badge Type</label>
+        <select id="badge" name="badge">
+          <option value="online" {% if event and event.badge=='online' %}selected{% endif %}>Online</option>
+          <option value="workshop" {% if event and event.badge=='workshop' %}selected{% endif %}>Workshop</option>
+          <option value="free" {% if event and event.badge=='free' %}selected{% endif %}>Free</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-check">
+        <input type="checkbox" name="active" value="1"
+               {% if not event or event.active %}checked{% endif %}>
+        Show this event on the website
+      </label>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:8px">
+      <button type="submit" class="btn btn-primary">
+        {% if event %}Save Changes{% else %}Create Event{% endif %}
+      </button>
+      <a class="btn btn-ghost" href="/admin/events">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

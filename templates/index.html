@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>St. Pete AI — AI Education, Ethics & Community | Saint Petersburg, FL</title>
+<meta name="description" content="St. Pete AI is a 501(c)(3) nonprofit in Saint Petersburg, Florida dedicated to AI education, ethics, safety, and providing resources for community benefit.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.stpeteai.org/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="St. Pete AI — AI for the Community">
+<meta property="og:description" content="AI education, ethics, and community resources for Saint Petersburg, Florida.">
+<meta property="og:url" content="https://www.stpeteai.org/">
+<meta property="og:site_name" content="St. Pete AI">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Tokens ─────────────────────────────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+:root{
+  --cream:#eef1f7;
+  --dark:#0d1220;
+  --dark-card:#131929;
+  --dark-card2:#1a2235;
+  --white:#f4f7fc;
+  --blue:#1e5fc4;
+  --blue-lt:#3b7de0;
+  --blue-dim:#0d2e6b;
+  --sky:#5b9cf6;
+  --teal:#0ca5a5;
+  --indigo:#818cf8;
+  --text:#141c2e;
+  --text-muted:#5c6680;
+  --text-light:#8a96b0;
+  --border:#c4ccdc;
+  --border-dark:#1e2a40;
+  --green:#2d7a4f;
+}
+
+body{background:var(--cream);color:var(--text);font-family:'Roboto',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden}
+
+/* ── Utilities ──────────────────────────────────────────────── */
+.container{max-width:1140px;margin:0 auto;padding:0 32px}
+section{position:relative}
+.display{font-family:'Roboto',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:.95}
+.tag{display:inline-flex;align-items:center;gap:8px;background:rgba(0,0,0,.07);border:1px solid rgba(0,0,0,.12);border-radius:100px;padding:5px 14px;font-family:'Roboto Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
+.tag-blue{background:rgba(30,95,196,.1);border-color:rgba(30,95,196,.3);color:var(--blue)}
+
+/* ── Announce Bar ───────────────────────────────────────────── */
+.announce{background:var(--blue);color:#fff;text-align:center;padding:10px 20px;font-family:'Roboto Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}
+.announce a{color:#a8d4ff;text-decoration:underline;text-underline-offset:3px;font-weight:700}
+
+/* ── Nav ────────────────────────────────────────────────────── */
+nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 32px}
+.nav-inner{max-width:1140px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
+.nav-brand{font-family:'Roboto',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:-.01em;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:10px}
+.nav-logo{width:38px;height:38px;border-radius:8px;object-fit:cover;flex-shrink:0}
+.nav-dot{width:10px;height:10px;border-radius:50%;background:var(--blue);flex-shrink:0}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{color:var(--text-muted);font-size:.9rem;font-weight:500;text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--blue)}
+.nav-cta{background:var(--dark);color:#fff;font-weight:600;font-size:.85rem;padding:10px 22px;border-radius:6px;text-decoration:none;transition:all .2s;white-space:nowrap}
+.nav-cta:hover{background:var(--blue)}
+.nav-menu-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;flex-direction:column;gap:5px}
+.nav-menu-btn span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px}
+
+/* ── Hero ───────────────────────────────────────────────────── */
+#hero{
+  padding:120px 0 100px;
+  overflow:hidden;
+  position:relative;
+  background:url('/static/images/FlyBuddha.jpg') center center / cover no-repeat;
+  min-height:92vh;
+  display:flex;
+  align-items:center;
+}
+#hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(110deg,rgba(8,12,28,.90) 0%,rgba(8,12,28,.75) 55%,rgba(8,12,28,.50) 100%);
+  z-index:0;
+}
+#hero .container{position:relative;z-index:1}
+.hero-grid{display:grid;grid-template-columns:1fr 420px;gap:60px;align-items:center}
+.hero-tag{margin-bottom:28px}
+.hero-h1{font-family:'Roboto',sans-serif;font-weight:700;font-size:clamp(3.8rem,7vw,6.5rem);line-height:.92;letter-spacing:-.03em;color:#fff;margin-bottom:28px}
+.hero-h1 em{font-style:normal;color:#5b9cf6}
+.hero-h1 .site-url{display:block;font-size:clamp(1.1rem,2.2vw,1.6rem);font-weight:500;letter-spacing:.04em;color:var(--teal);margin-bottom:8px;font-family:'Roboto Mono',monospace;text-transform:lowercase}
+.hero-body{font-size:1.1rem;color:rgba(255,255,255,.72);max-width:480px;line-height:1.75;margin-bottom:40px}
+.hero-ctas{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;background:var(--blue);color:#fff;font-weight:600;font-size:.95rem;padding:14px 28px;border-radius:6px;text-decoration:none;transition:all .2s}
+.btn-primary:hover{background:var(--blue-lt);transform:translateY(-1px)}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;color:rgba(255,255,255,.65);font-size:.95rem;font-weight:500;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.25);padding-bottom:2px;transition:all .2s}
+.btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,.6)}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);border-radius:10px;overflow:hidden;margin-top:52px;backdrop-filter:blur(8px)}
+.hero-stat{background:rgba(8,12,28,.55);padding:20px 16px;text-align:center}
+.stat-n{font-family:'Roboto',sans-serif;font-weight:700;font-size:2rem;line-height:1;background:linear-gradient(135deg,#fff 0%,var(--sky) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-l{font-size:.72rem;color:rgba(148,178,240,.7);margin-top:4px;font-family:'Roboto Mono',monospace;text-transform:uppercase;letter-spacing:.08em}
+
+/* Hero side card */
+.hero-card{background:rgba(19,25,41,.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:36px;position:relative}
+.hero-card-tag{font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:20px}
+.hero-card h3{font-family:'Roboto',sans-serif;font-weight:700;font-size:1.4rem;color:#fff;line-height:1.2;margin-bottom:12px}
+.hero-card p{font-size:.88rem;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:24px}
+.pillars-mini{display:flex;flex-direction:column;gap:10px}
+.pillar-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,.05);border-radius:8px;border:1px solid rgba(255,255,255,.08)}
+.pillar-icon{font-size:1.1rem;width:28px;text-align:center}
+.pillar-text{font-size:.88rem;color:rgba(255,255,255,.75);font-weight:500}
+
+/* ── Mission ────────────────────────────────────────────────── */
+#mission{padding:100px 0;background:var(--dark)}
+.section-head{text-align:center;margin-bottom:72px}
+.section-head .tag{margin-bottom:24px}
+.section-head h2{font-family:'Roboto',sans-serif;font-weight:700;font-size:clamp(2.6rem,5vw,4rem);letter-spacing:-.02em;line-height:.95;margin-bottom:20px;background:linear-gradient(130deg,#fff 0%,#c8d8fc 55%,var(--sky) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.section-head p{font-size:1.05rem;color:#7a93c8;max-width:520px;margin:0 auto;line-height:1.75}
+.mission-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.mission-card{background:var(--dark-card);border:1px solid var(--border-dark);border-radius:12px;padding:36px 28px;transition:all .25s}
+.mission-card:hover{border-color:rgba(30,95,196,.4);transform:translateY(-4px)}
+.mission-icon{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:24px}
+.mission-card h3{font-family:'Roboto',sans-serif;font-weight:700;font-size:1.35rem;color:var(--sky);margin-bottom:14px;line-height:1.2}
+.mission-card p{font-size:.92rem;color:#7a93c8;line-height:1.7}
+
+/* ── Programs ───────────────────────────────────────────────── */
+#programs{padding:100px 0;background:var(--cream)}
+.programs-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;margin-top:64px}
+.section-head-light h2{font-family:'Roboto',sans-serif;font-weight:700;font-size:clamp(2.4rem,5vw,3.6rem);letter-spacing:-.02em;line-height:.95;margin-bottom:16px;background:linear-gradient(135deg,var(--dark) 0%,var(--blue) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.section-head-light p{font-size:1.05rem;color:var(--blue-dim);max-width:520px;line-height:1.75}
+.programs-list{display:flex;flex-direction:column;margin-top:64px}
+.program-item{display:flex;align-items:flex-start;gap:20px;padding:22px 0;border-bottom:1px solid var(--border)}
+.program-item:first-child{padding-top:0}
+.program-num{font-family:'Roboto Mono',monospace;font-size:.72rem;color:var(--blue);padding-top:4px;flex-shrink:0;width:26px;font-weight:700}
+.program-body h4{font-family:'Roboto',sans-serif;font-weight:700;font-size:1.05rem;color:var(--blue-dim);margin-bottom:6px}
+.program-body p{font-size:.88rem;color:var(--text-muted);line-height:1.65}
+.programs-feature{background:var(--dark);border-radius:16px;padding:44px;position:sticky;top:88px}
+.programs-feature .label{font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:20px}
+.programs-feature h3{font-family:'Roboto',sans-serif;font-weight:700;font-size:1.8rem;line-height:1.1;margin-bottom:16px;background:linear-gradient(130deg,#fff 0%,var(--sky) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.programs-feature p{font-size:.92rem;color:#7a93c8;line-height:1.7;margin-bottom:20px}
+.feature-list{display:flex;flex-direction:column;gap:9px}
+.feature-list li{display:flex;align-items:center;gap:10px;font-size:.9rem;color:#a8c0e8;list-style:none}
+.feature-list li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0}
+
+/* ── Membership ─────────────────────────────────────────────── */
+#membership{padding:100px 0;background:var(--dark)}
+.membership-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:0}
+.tier-card{background:var(--dark-card);border:1px solid var(--border-dark);border-radius:14px;overflow:hidden;transition:all .25s}
+.tier-card.featured{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue),0 24px 60px rgba(30,95,196,.15)}
+.tier-card:hover{transform:translateY(-4px)}
+.tier-header{padding:28px 28px 22px}
+.tier-badge{display:inline-block;font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:4px;margin-bottom:16px;background:rgba(30,95,196,.15);color:var(--blue);border:1px solid rgba(30,95,196,.25)}
+.tier-badge.free{background:rgba(255,255,255,.06);color:#8a96b0;border-color:var(--border-dark)}
+.tier-badge.champion{background:var(--blue);color:#fff;border-color:var(--blue-lt)}
+.tier-name{font-family:'Roboto',sans-serif;font-weight:700;font-size:1.3rem;color:var(--sky);margin-bottom:8px}
+.tier-price{display:flex;align-items:baseline;gap:3px;margin-bottom:8px}
+.price-curr{font-size:.95rem;color:var(--blue);font-weight:600;margin-top:2px}
+.price-amt{font-family:'Roboto',sans-serif;font-weight:700;font-size:2.6rem;color:var(--blue);line-height:1}
+.price-period{font-size:.8rem;color:#5c6680}
+.price-free{font-family:'Roboto',sans-serif;font-weight:700;font-size:2.6rem;color:#5c6680;line-height:1}
+.tier-desc{font-size:.87rem;color:#5c6680;line-height:1.6}
+.tier-divider{height:1px;background:var(--border-dark);margin:0 28px}
+.tier-body{padding:22px 28px 28px}
+.tier-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.tier-features li{display:flex;align-items:flex-start;gap:10px;font-size:.87rem;color:#a0b4d4;line-height:1.5}
+.chk{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:.6rem;font-weight:700}
+.chk.basic{background:rgba(255,255,255,.07);color:#5c6680}
+.chk.mid{background:rgba(30,95,196,.15);color:var(--blue)}
+.chk.top{background:var(--blue);color:#fff}
+.tier-btn{display:block;text-align:center;padding:13px 20px;border-radius:6px;font-weight:600;font-size:.9rem;text-decoration:none;transition:all .2s;border:2px solid var(--border-dark);color:#5c6680}
+.tier-btn:hover{border-color:rgba(255,255,255,.2);color:#fff}
+.tier-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.tier-btn.primary:hover{background:var(--blue-lt)}
+.tier-btn.outline{border-color:rgba(30,95,196,.4);color:var(--blue)}
+.tier-btn.outline:hover{background:rgba(30,95,196,.1)}
+
+/* ── Meetup Section ─────────────────────────────────────────── */
+#meetup{padding:100px 0;background:var(--dark);position:relative;overflow:hidden}
+#meetup::before{content:'';position:absolute;right:-120px;top:-120px;width:480px;height:480px;border-radius:50%;background:radial-gradient(circle,rgba(30,95,196,.12),transparent 70%);pointer-events:none}
+#meetup::after{content:'';position:absolute;left:-80px;bottom:-80px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(12,165,165,.08),transparent 70%);pointer-events:none}
+.meetup-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start}
+.meetup-logo-wrap{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.meetup-logo{width:48px;height:48px;border-radius:10px;object-fit:cover;flex-shrink:0}
+.meetup-logo-label{font-family:'Roboto Mono',monospace;font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;color:#5c6680;line-height:1.4;max-width:200px}
+.meetup-left .tag{margin-bottom:24px}
+.meetup-left h2{font-family:'Roboto',sans-serif;font-weight:900;font-size:clamp(2.2rem,4vw,3.2rem);line-height:.95;letter-spacing:-.02em;margin-bottom:20px;margin-top:16px;background:linear-gradient(130deg,#fff 0%,#c8d8fc 55%,var(--sky) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.meetup-left p{font-size:1rem;color:#7a93c8;line-height:1.75;margin-bottom:32px}
+.meetup-stats{display:flex;gap:32px;margin-bottom:36px}
+.mstat{display:flex;flex-direction:column;gap:4px}
+.mstat-n{font-family:'Roboto',sans-serif;font-weight:900;font-size:2.2rem;line-height:1;background:linear-gradient(135deg,#fff 0%,var(--sky) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mstat-l{font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:#5c6680}
+.btn-meetup{display:inline-flex;align-items:center;gap:10px;background:var(--blue);color:#fff;font-weight:700;font-size:.95rem;padding:14px 28px;border-radius:6px;text-decoration:none;transition:all .2s}
+.btn-meetup:hover{background:var(--blue-lt);transform:translateY(-1px)}
+.meetup-events{display:flex;flex-direction:column;gap:14px}
+.event-card{background:var(--dark-card);border:1px solid var(--border-dark);border-radius:12px;padding:22px 24px;display:flex;gap:20px;align-items:flex-start;transition:all .25s}
+.event-card:hover{border-color:rgba(30,95,196,.4);transform:translateX(4px)}
+.event-date{flex-shrink:0;width:52px;text-align:center;background:rgba(30,95,196,.12);border:1px solid rgba(30,95,196,.2);border-radius:8px;padding:10px 6px}
+.event-mo{font-family:'Roboto Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);display:block}
+.event-dy{font-family:'Roboto',sans-serif;font-weight:900;font-size:1.6rem;line-height:1;color:#fff;display:block}
+.event-info h4{font-family:'Roboto',sans-serif;font-weight:700;font-size:.98rem;color:var(--sky);margin-bottom:5px;line-height:1.3}
+.event-info p{font-size:.82rem;color:#5c6680;line-height:1.5}
+.event-badge{display:inline-block;font-family:'Roboto Mono',monospace;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:3px;margin-top:7px}
+.event-badge.online{background:rgba(12,165,165,.1);color:var(--teal);border:1px solid rgba(12,165,165,.2)}
+.event-badge.paid{background:rgba(30,95,196,.1);color:var(--blue-lt);border:1px solid rgba(30,95,196,.2)}
+.meetup-footer-note{margin-top:20px;font-size:.82rem;color:#3a4050;font-family:'Roboto Mono',monospace;text-align:right}
+.meetup-footer-note a{color:var(--blue-lt);text-decoration:none}
+.meetup-footer-note a:hover{color:var(--sky)}
+@media(max-width:1024px){.meetup-grid{grid-template-columns:1fr}.meetup-stats{gap:24px}}
+
+/* ── Claude's Brain Promo ───────────────────────────────────── */
+#claudes-brain{padding:100px 0;background:var(--cream)}
+.brain-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+.brain-left .tag{margin-bottom:24px}
+.brain-left h2{font-family:'Roboto',sans-serif;font-weight:700;font-size:clamp(2.2rem,4vw,3.2rem);letter-spacing:-.02em;line-height:1;margin-bottom:20px;margin-top:16px;background:linear-gradient(135deg,var(--dark) 0%,var(--blue) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.brain-left p{font-size:1rem;color:var(--blue-dim);line-height:1.75;margin-bottom:12px}
+.brain-left p em{color:var(--blue);font-style:italic}
+.brain-left a.btn-dark{margin-top:20px;display:inline-flex;align-items:center;gap:10px;background:var(--dark);color:#fff;font-weight:600;font-size:.95rem;padding:14px 28px;border-radius:6px;text-decoration:none;transition:all .2s}
+.brain-left a.btn-dark:hover{background:var(--blue);transform:translateY(-1px)}
+.brain-right{display:flex;flex-direction:column;gap:24px}
+.brain-img-wrap{position:relative;border-radius:16px;overflow:hidden;line-height:0}
+.brain-img-wrap img{width:100%;display:block;border-radius:16px;transition:transform .4s}
+.brain-img-wrap:hover img{transform:scale(1.02)}
+.brain-img-wrap::after{content:'';position:absolute;inset:0;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(59,125,224,.25);pointer-events:none}
+.brain-img-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(30,95,196,.22),transparent 70%);border-radius:16px;pointer-events:none;animation:glowPulse 3s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{opacity:.7}50%{opacity:1}}
+.brain-card{background:var(--dark);border-radius:16px;padding:40px;position:relative;overflow:hidden}
+.brain-card::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(30,95,196,.18),transparent 70%);pointer-events:none}
+.brain-card-tag{font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:20px}
+.brain-card h3{font-family:'Roboto',sans-serif;font-weight:700;font-size:1.9rem;color:#fff;line-height:1.1;margin-bottom:6px}
+.brain-card-sub{font-size:.92rem;color:var(--sky);font-style:italic;margin-bottom:24px;opacity:.8}
+.chapters-list{display:flex;flex-direction:column;gap:7px;margin-bottom:28px}
+.chapter-row{display:flex;align-items:center;gap:12px;padding:9px 14px;background:rgba(255,255,255,.04);border-radius:7px;border:1px solid rgba(255,255,255,.05)}
+.ch-num{font-family:'Roboto Mono',monospace;font-size:.65rem;color:var(--blue);width:22px;flex-shrink:0}
+.ch-name{font-size:.87rem;color:#a8c4f0;font-weight:500}
+.brain-price-row{display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid var(--border-dark)}
+.brain-price{font-family:'Roboto',sans-serif;font-weight:700;font-size:2rem;color:var(--blue)}
+.brain-formats{display:flex;gap:8px}
+.fmt-badge{font-family:'Roboto Mono',monospace;font-size:.65rem;padding:4px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:4px;color:#8a96b0}
+.brain-cta{display:block;text-align:center;background:var(--blue);color:#fff;font-weight:600;font-size:.95rem;padding:14px 20px;border-radius:7px;text-decoration:none;margin-top:16px;transition:all .2s}
+.brain-cta:hover{background:var(--blue-lt);transform:translateY(-1px)}
+
+/* ── Community CTA ──────────────────────────────────────────── */
+#community{padding:100px 0;background:var(--dark);text-align:center;overflow:hidden;position:relative}
+#community::before{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(30,95,196,.1),transparent 70%);pointer-events:none}
+.community-inner{position:relative;z-index:1}
+.community-inner .tag{margin-bottom:28px}
+.community-inner h2{font-family:'Roboto',sans-serif;font-weight:700;font-size:clamp(2.8rem,6vw,5rem);color:#fff;letter-spacing:-.03em;line-height:.92;margin-bottom:24px}
+.community-inner h2 em{font-style:normal;color:#5b9cf6}
+.community-inner p{font-size:1.05rem;color:#7a93c8;max-width:480px;margin:0 auto 40px;line-height:1.75}
+.community-ctas{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.btn-blue{display:inline-flex;align-items:center;gap:10px;background:var(--blue);color:#fff;font-weight:600;font-size:.95rem;padding:16px 32px;border-radius:6px;text-decoration:none;transition:all .2s}
+.btn-blue:hover{background:var(--blue-lt);transform:translateY(-2px)}
+.btn-outline-lt{display:inline-flex;align-items:center;gap:8px;color:#8a96b0;font-size:.95rem;font-weight:500;text-decoration:none;border:1px solid var(--border-dark);padding:15px 28px;border-radius:6px;transition:all .2s}
+.btn-outline-lt:hover{border-color:rgba(255,255,255,.2);color:#fff}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+footer{background:var(--dark);border-top:1px solid var(--border-dark);padding:48px 32px 32px}
+.footer-inner{max-width:1140px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:48px;padding-bottom:40px;border-bottom:1px solid var(--border-dark)}
+.footer-brand-name{font-family:'Roboto',sans-serif;font-weight:700;font-size:1.15rem;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:14px;text-decoration:none}
+.footer-logo{width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0}
+.footer-tagline{font-size:.88rem;color:#7a93c8;line-height:1.6;max-width:240px}
+.footer-col h5{font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sky);margin-bottom:16px;opacity:.7}
+.footer-col a{display:block;color:#7a93c8;font-size:.88rem;text-decoration:none;margin-bottom:9px;transition:color .2s}
+.footer-col a:hover{color:var(--sky)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-top:24px}
+.footer-copy{font-size:.78rem;color:#4a5880}
+.footer-501{font-family:'Roboto Mono',monospace;font-size:.65rem;color:#4a5880;letter-spacing:.08em;text-transform:uppercase}
+
+/* ── Animations ─────────────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease}
+.reveal.vis{opacity:1;transform:translateY(0)}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media(max-width:1024px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-card{display:none}
+  .programs-grid{grid-template-columns:1fr}
+  .programs-feature{position:relative;top:0}
+  .brain-grid{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr 1fr;gap:36px}
+}
+@media(max-width:768px){
+  .container{padding:0 20px}
+  nav{padding:0 20px}
+  .nav-links{display:none}
+  .nav-menu-btn{display:flex}
+  .mission-grid{grid-template-columns:1fr}
+  .membership-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}
+  #hero{padding:80px 0 60px;min-height:auto}
+  .hero-stats{grid-template-columns:repeat(3,1fr)}
+  .footer-top{grid-template-columns:1fr 1fr;gap:24px}
+}
+@media(max-width:520px){
+  .hero-stats{grid-template-columns:1fr 1fr}
+  .hero-stats .hero-stat:last-child{grid-column:span 2}
+  .footer-top{grid-template-columns:1fr}
+}
+
+/* ── Flash Messages ──────────────────────────────────────────── */
+.flash-bar{position:fixed;top:0;left:0;right:0;z-index:999;display:flex;flex-direction:column;gap:0;pointer-events:none}
+.flash-msg{padding:14px 24px;font-size:.9rem;font-weight:600;text-align:center;pointer-events:all;animation:slideDown .3s ease}
+.flash-msg.success{background:#1a3d2b;color:#6ee0a0;border-bottom:2px solid #2a9d5c}
+.flash-msg.error{background:#3d1a1a;color:#f09090;border-bottom:2px solid #e05252}
+.flash-close{float:right;background:none;border:none;color:inherit;cursor:pointer;font-size:1.1rem;opacity:.7;margin-left:16px}
+@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── Membership Modals ───────────────────────────────────────── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:#131929;border:1px solid #1e2a40;border-radius:16px;padding:40px;width:100%;max-width:480px;position:relative;animation:modalIn .25s ease}
+@keyframes modalIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-close{position:absolute;top:16px;right:20px;background:none;border:none;color:#5c6680;font-size:1.4rem;cursor:pointer;line-height:1;transition:color .15s}
+.modal-close:hover{color:#fff}
+.modal-tag{font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
+.modal-tag.community{color:#8a96b0}
+.modal-tag.supporter{color:var(--sky)}
+.modal-tag.champion{color:var(--blue-lt)}
+.modal h3{font-family:'Roboto',sans-serif;font-weight:900;font-size:1.6rem;color:#fff;margin-bottom:6px}
+.modal-price{font-family:'Roboto',sans-serif;font-weight:700;font-size:1.1rem;color:var(--blue);margin-bottom:20px}
+.modal-form .field{margin-bottom:16px}
+.modal-form label{display:block;font-size:.8rem;color:#7a93c8;margin-bottom:6px;font-weight:500}
+.modal-form input,.modal-form textarea{width:100%;background:#0d1220;border:1px solid #1e2a40;color:#fff;padding:11px 14px;border-radius:8px;font-size:.9rem;font-family:'Roboto',sans-serif;outline:none;transition:border-color .15s}
+.modal-form input:focus,.modal-form textarea:focus{border-color:var(--blue-lt)}
+.modal-form textarea{resize:vertical;min-height:80px}
+.modal-submit{width:100%;padding:13px;border-radius:8px;border:none;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'Roboto',sans-serif;transition:all .2s;margin-top:4px}
+.modal-submit.community{background:var(--dark-card2);color:#fff;border:1px solid #2a3a55}
+.modal-submit.community:hover{background:#22304a}
+.modal-submit.supporter{background:var(--blue);color:#fff}
+.modal-submit.supporter:hover{background:var(--blue-lt)}
+.modal-submit.champion{background:linear-gradient(135deg,var(--blue) 0%,var(--indigo) 100%);color:#fff}
+.modal-submit.champion:hover{opacity:.9}
+.modal-note{font-size:.78rem;color:#3a4a6a;text-align:center;margin-top:12px}
+
+/* ── Contact Section ─────────────────────────────────────────── */
+#contact{padding:100px 0;background:var(--dark);position:relative;overflow:hidden}
+#contact::before{content:'';position:absolute;right:-80px;bottom:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(12,165,165,.07),transparent 70%);pointer-events:none}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start}
+.contact-left h2{font-family:'Roboto',sans-serif;font-weight:900;font-size:clamp(2rem,4vw,3rem);line-height:.95;letter-spacing:-.02em;margin-bottom:20px;margin-top:16px;background:linear-gradient(130deg,#fff 0%,#c8d8fc 55%,var(--sky) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.contact-left p{font-size:1rem;color:#7a93c8;line-height:1.75;margin-bottom:12px}
+.contact-detail{display:flex;align-items:center;gap:12px;margin-top:28px}
+.contact-detail-icon{width:40px;height:40px;background:rgba(30,95,196,.12);border:1px solid rgba(30,95,196,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.contact-detail-text{font-size:.9rem;color:#7a93c8}
+.contact-detail-text a{color:var(--sky);text-decoration:none}
+.contact-detail-text a:hover{text-decoration:underline}
+.contact-form .cfield{margin-bottom:16px}
+.contact-form label{display:block;font-size:.8rem;color:#7a93c8;margin-bottom:6px;font-weight:500}
+.contact-form input,.contact-form select,.contact-form textarea{width:100%;background:#0d1220;border:1px solid var(--border-dark);color:#fff;padding:11px 14px;border-radius:8px;font-size:.9rem;font-family:'Roboto',sans-serif;outline:none;transition:border-color .15s}
+.contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{border-color:var(--blue-lt)}
+.contact-form select option{background:#131929}
+.contact-form textarea{resize:vertical;min-height:120px}
+.contact-submit{background:var(--blue);color:#fff;border:none;width:100%;padding:14px;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'Roboto',sans-serif;transition:all .2s;margin-top:4px}
+.contact-submit:hover{background:var(--blue-lt);transform:translateY(-1px)}
+@media(max-width:1024px){.contact-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-bar">
+  {% for cat, msg in messages %}
+  <div class="flash-msg {{ cat }}">
+    {{ msg }}
+    <button class="flash-close" onclick="this.parentElement.remove()">✕</button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- Membership Modals -->
+{% for tier, label, price in [('community','Community Member','Free'),('supporter','Supporter','$10 / month'),('champion','Champion','$50 / month')] %}
+<div class="modal-overlay" id="modal-{{ tier }}" onclick="if(event.target===this)closeModal('{{ tier }}')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('{{ tier }}')">✕</button>
+    <div class="modal-tag {{ tier }}">{{ label }}</div>
+    <h3>Join as {{ label }}</h3>
+    <div class="modal-price">{{ price }}</div>
+    <form class="modal-form" method="post" action="/join">
+      <input type="hidden" name="tier" value="{{ tier }}">
+      <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+      <div class="field">
+        <label for="{{ tier }}-name">Full Name *</label>
+        <input type="text" id="{{ tier }}-name" name="name" placeholder="Your name" required>
+      </div>
+      <div class="field">
+        <label for="{{ tier }}-email">Email Address *</label>
+        <input type="email" id="{{ tier }}-email" name="email" placeholder="your@email.com" required>
+      </div>
+      <div class="field">
+        <label for="{{ tier }}-msg">Message <span style="opacity:.5">(optional)</span></label>
+        <textarea id="{{ tier }}-msg" name="message" placeholder="Tell us a bit about yourself or why you're joining…"></textarea>
+      </div>
+      <button type="submit" class="modal-submit {{ tier }}">
+        {% if tier == 'community' %}Join Free{% elif tier == 'supporter' %}Become a Supporter{% else %}Become a Champion{% endif %}
+      </button>
+      <p class="modal-note">We'll follow up at your email to confirm membership.{% if tier != 'community' %} Payment details will be shared separately.{% endif %}</p>
+    </form>
+  </div>
+</div>
+{% endfor %}
+
+<!-- Announcement Bar -->
+<div class="announce">
+  &#9679;&nbsp; Spring 2026 membership now open &mdash; <a href="#membership">Join St. Pete AI today</a>
+</div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="/">
+      <img src="/static/images/Logo_0.0.png" alt="St. Pete AI" class="nav-logo">ST. PETE AI
+    </a>
+    <div class="nav-links">
+      <a href="#mission">Mission</a>
+      <a href="#programs">Programs</a>
+      <a href="#membership">Membership</a>
+      <a href="#meetup">Meetup</a>
+      <a href="#claudes-brain">Resources</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a class="nav-cta" href="#membership">Join</a>
+    <button class="nav-menu-btn" id="menuBtn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="reveal">
+        <div class="hero-tag">
+          <span class="tag" style="background:rgba(30,95,196,.25);border-color:rgba(91,156,246,.4);color:#a8c8ff">
+            &#127968;&nbsp; 501(c)(3) Nonprofit &middot; Saint Petersburg, FL
+          </span>
+        </div>
+        <h1 class="hero-h1 display"><span class="site-url">stpeteai.org</span>AI FOR THE<br><em>COMMUNITY.</em></h1>
+        <p class="hero-body">We believe artificial intelligence should be understood, trusted, and accessible to everyone in our city. St. Pete AI educates, advocates, and equips — for the people of Tampa Bay.</p>
+        <div class="hero-ctas">
+          <a class="btn-primary" href="#membership">Join Our Community &rarr;</a>
+          <a class="btn-ghost" href="#mission">Our Mission &#8595;</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="stat-n">3</div><div class="stat-l">Focus Areas</div></div>
+          <div class="hero-stat"><div class="stat-n">Free</div><div class="stat-l">To Join</div></div>
+          <div class="hero-stat"><div class="stat-n">STL</div><div class="stat-l">St. Pete, FL</div></div>
+        </div>
+      </div>
+      <div class="hero-card reveal">
+        <div class="hero-card-tag">Our Three Pillars</div>
+        <h3>What We Work On</h3>
+        <p>Every initiative we run traces back to one of three core commitments to this community.</p>
+        <div class="pillars-mini">
+          <div class="pillar-row"><div class="pillar-icon">&#127979;</div><div class="pillar-text">AI Education &amp; Literacy</div></div>
+          <div class="pillar-row"><div class="pillar-icon">&#9878;&#65039;</div><div class="pillar-text">Ethics &amp; Safety Advocacy</div></div>
+          <div class="pillar-row"><div class="pillar-icon">&#127968;</div><div class="pillar-text">Community Resources</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mission -->
+<section id="mission">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="tag tag-blue">Our Mission</span>
+      <h2 class="display" style="margin-top:20px">Three Pillars.<br>One Community.</h2>
+      <p>St. Pete AI is built on the conviction that local communities need to be active participants in the AI future — not passive recipients of it.</p>
+    </div>
+    <div class="mission-grid">
+      <div class="mission-card reveal">
+        <div class="mission-icon" style="background:rgba(30,95,196,.12)">&#127979;</div>
+        <h3>AI Education</h3>
+        <p>From beginner workshops to practitioner deep dives — we build AI literacy across every level. Whether you're a student, professional, business owner, or curious neighbor, we have a path for you.</p>
+      </div>
+      <div class="mission-card reveal">
+        <div class="mission-icon" style="background:rgba(45,122,79,.12)">&#9878;&#65039;</div>
+        <h3>Ethics &amp; Safety</h3>
+        <p>Responsible AI doesn't happen by accident. We convene local leaders, host ethics roundtables, and advocate for transparent, fair, and safe AI systems that serve our community's values.</p>
+      </div>
+      <div class="mission-card reveal">
+        <div class="mission-icon" style="background:rgba(37,85,160,.12)">&#127968;</div>
+        <h3>Community Resources</h3>
+        <p>Practical tools, curated guides, event recordings, and a network of people building with AI. No gatekeeping — free and open to every St. Pete resident.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Programs -->
+<section id="programs">
+  <div class="container">
+    <div class="section-head-light reveal">
+      <span class="tag tag-blue">Programs &amp; Initiatives</span>
+      <h2 style="margin-top:20px">How We Show Up<br>For St. Pete.</h2>
+    </div>
+    <div class="programs-grid">
+      <div class="programs-list reveal">
+        <div class="program-item">
+          <span class="program-num">01</span>
+          <div class="program-body">
+            <h4>Monthly Community Meetups</h4>
+            <p>A relaxed, regular gathering for anyone curious about AI — demos, discussions, and real talk about what's happening in the field. No jargon required.</p>
+          </div>
+        </div>
+        <div class="program-item">
+          <span class="program-num">02</span>
+          <div class="program-body">
+            <h4>AI Literacy Workshops</h4>
+            <p>Hands-on sessions teaching practical AI skills — prompting, automation, and AI tools for business — built for non-technical participants.</p>
+          </div>
+        </div>
+        <div class="program-item">
+          <span class="program-num">03</span>
+          <div class="program-body">
+            <h4>Ethics &amp; Policy Roundtables</h4>
+            <p>Structured conversations with local leaders and technologists on the societal implications of AI in healthcare, education, and employment.</p>
+          </div>
+        </div>
+        <div class="program-item">
+          <span class="program-num">04</span>
+          <div class="program-body">
+            <h4>Free Resource Library</h4>
+            <p>A curated, community-maintained collection of guides, tutorials, and tools — organized by topic and skill level and open to all.</p>
+          </div>
+        </div>
+        <div class="program-item">
+          <span class="program-num">05</span>
+          <div class="program-body">
+            <h4>Member Network</h4>
+            <p>Connect with others building AI projects, learning new skills, or working on responsible AI initiatives across Tampa Bay.</p>
+          </div>
+        </div>
+      </div>
+      <div class="programs-feature reveal">
+        <div class="label">Why It Matters</div>
+        <h3>Local communities need a voice in AI's future.</h3>
+        <p>The decisions being made today about AI — how it's trained, who it serves, what values it reflects — will shape St. Petersburg for generations. We exist to make sure our community is part of that conversation.</p>
+        <p style="font-size:.9rem;color:#5c6680;margin-bottom:0">Every workshop we run, every roundtable we host, every resource we publish is a step toward an AI future that works for Tampa Bay.</p>
+        <ul class="feature-list" style="margin-top:28px">
+          <li>No technical background required to participate</li>
+          <li>All events recorded and freely available</li>
+          <li>Members shape which programs we prioritize</li>
+          <li>Partnerships with local universities and schools</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Membership -->
+<section id="membership">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="tag tag-blue">Membership</span>
+      <h2 class="display" style="margin-top:20px">Choose Your Level<br>of Involvement.</h2>
+      <p>Join at whatever level makes sense for you. Every member strengthens the community and helps fund our free programs.</p>
+    </div>
+    <div class="membership-grid">
+
+      <!-- Free -->
+      <div class="tier-card reveal">
+        <div class="tier-header">
+          <span class="tier-badge free">Free</span>
+          <div class="tier-name">Community Member</div>
+          <div class="tier-price"><span class="price-free">Free</span></div>
+          <div class="tier-desc">Everything you need to learn, connect, and participate in the St. Pete AI community.</div>
+        </div>
+        <div class="tier-divider"></div>
+        <div class="tier-body">
+          <ul class="tier-features">
+            <li><span class="chk basic">&#10003;</span>Monthly community newsletter</li>
+            <li><span class="chk basic">&#10003;</span>Access to monthly meetups</li>
+            <li><span class="chk basic">&#10003;</span>Free resource library</li>
+            <li><span class="chk basic">&#10003;</span>Community forum access</li>
+            <li><span class="chk basic">&#10003;</span>Event recordings archive</li>
+          </ul>
+          <button class="tier-btn" onclick="openModal('community')">Join Free</button>
+        </div>
+      </div>
+
+      <!-- Supporter -->
+      <div class="tier-card featured reveal">
+        <div class="tier-header">
+          <span class="tier-badge">Supporter</span>
+          <div class="tier-name">Supporter</div>
+          <div class="tier-price">
+            <span class="price-curr">$</span>
+            <span class="price-amt">10</span>
+            <span class="price-period">/month</span>
+          </div>
+          <div class="tier-desc">Priority access, a stronger voice, and a direct line to what's next.</div>
+        </div>
+        <div class="tier-divider"></div>
+        <div class="tier-body">
+          <ul class="tier-features">
+            <li><span class="chk mid">&#10003;</span>Everything in Community</li>
+            <li><span class="chk mid">&#10003;</span>Priority workshop registration</li>
+            <li><span class="chk mid">&#10003;</span>Member directory listing</li>
+            <li><span class="chk mid">&#10003;</span>Voting rights on programs</li>
+            <li><span class="chk mid">&#10003;</span>Supporter-only Slack channel</li>
+            <li><span class="chk mid">&#10003;</span>Early access to new resources</li>
+          </ul>
+          <button class="tier-btn primary" onclick="openModal('supporter')">Become a Supporter</button>
+        </div>
+      </div>
+
+      <!-- Champion -->
+      <div class="tier-card reveal">
+        <div class="tier-header">
+          <span class="tier-badge champion">Champion</span>
+          <div class="tier-name">Champion</div>
+          <div class="tier-price">
+            <span class="price-curr">$</span>
+            <span class="price-amt">50</span>
+            <span class="price-period">/month</span>
+          </div>
+          <div class="tier-desc">Actively shape AI in Tampa Bay and be recognized for your leadership.</div>
+        </div>
+        <div class="tier-divider"></div>
+        <div class="tier-body">
+          <ul class="tier-features">
+            <li><span class="chk top">&#10003;</span>Everything in Supporter</li>
+            <li><span class="chk top">&#10003;</span>Advisory board access</li>
+            <li><span class="chk top">&#10003;</span>Private quarterly workshops</li>
+            <li><span class="chk top">&#10003;</span>Named recognition on site</li>
+            <li><span class="chk top">&#10003;</span>Annual 1-on-1 strategy session</li>
+            <li><span class="chk top">&#10003;</span>Co-present at community events</li>
+          </ul>
+          <button class="tier-btn outline" onclick="openModal('champion')">Become a Champion</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Meetup -->
+<section id="meetup">
+  <div class="container">
+    <div class="meetup-grid">
+      <div class="meetup-left reveal">
+        <div class="meetup-logo-wrap">
+          <img src="/static/images/meetup-logo.png" alt="Meetup" class="meetup-logo">
+          <span class="meetup-logo-label">Saint Petersburg AI<br>Collaborative Intelligence Group</span>
+        </div>
+        <h2>Meet. Build.<br>Collaborate.</h2>
+        <p>We gather in Saint Petersburg for hands-on workshops, live demos, and open conversation about AI. Whether you're writing code or just AI-curious, there's a seat at the table — 250 members and growing.</p>
+        <div class="meetup-stats">
+          <div class="mstat"><span class="mstat-n">250</span><span class="mstat-l">Members</span></div>
+          <div class="mstat"><span class="mstat-n">4.9<span style="font-size:1.2rem">★</span></span><span class="mstat-l">Rating</span></div>
+          <div class="mstat"><span class="mstat-n">21+</span><span class="mstat-l">Events</span></div>
+        </div>
+        <a class="btn-meetup" href="https://www.meetup.com/saint-petersburg-ai-collaborative-intelligence-group/" target="_blank" rel="noopener">Join the Group on Meetup &rarr;</a>
+      </div>
+      <div class="meetup-right reveal">
+        <div class="meetup-events">
+          {% for e in events %}
+          <div class="event-card">
+            <div class="event-date">
+              <span class="event-mo">{{ e.event_date.strftime('%b') }}</span>
+              <span class="event-dy">{{ e.event_date.strftime('%d') }}</span>
+            </div>
+            <div class="event-info">
+              <h4>{{ e.title }}</h4>
+              <p>{% if e.time_str %}{{ e.time_str }} &middot; {% endif %}{{ e.description }}</p>
+              <span class="event-badge {{ e.badge }}">{{ e.badge|title }}</span>
+            </div>
+          </div>
+          {% else %}
+          <p style="color:#5c6680;font-size:.9rem;padding:16px 0">No upcoming events. Check back soon!</p>
+          {% endfor %}
+        </div>
+        <p class="meetup-footer-note">21 past events &middot; <a href="https://www.meetup.com/saint-petersburg-ai-collaborative-intelligence-group/" target="_blank" rel="noopener">See all events on Meetup</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Claude's Brain Promo -->
+<section id="claudes-brain">
+  <div class="container">
+    <div class="brain-grid">
+      <div class="brain-left reveal">
+        <span class="tag tag-blue">From Our Founder</span>
+        <h2 class="display">The Complete<br>Claude Code<br>Field Guide.</h2>
+        <p>St. Pete AI founder Mark published <em>Building Claude's Brain</em> — a practical, plain-English field guide to every layer that makes Claude Code smarter. Written for developers and vibe coders alike.</p>
+        <p>Seven chapters covering CLAUDE.md, Settings, MCP Servers, Sub-Agents, Knowledge Base, Slash Commands, and Skills — the architecture map used by hundreds of builders.</p>
+        <a class="btn-dark" href="https://www.claudesbrain.com" target="_blank" rel="noopener">Get the Guide at claudesbrain.com &rarr;</a>
+      </div>
+      <div class="brain-right reveal">
+        <div class="brain-img-wrap">
+          <img src="/static/images/radial-chart.jpg" alt="Claude's Brain — 7-Layer Architecture Diagram" loading="lazy">
+          <div class="brain-img-glow"></div>
+        </div>
+      <div class="brain-card">
+        <div class="brain-card-tag">New Release &middot; claudesbrain.com</div>
+        <h3>Building Claude's Brain</h3>
+        <div class="brain-card-sub">A complete field guide to every layer that makes Claude Code smarter</div>
+        <div class="chapters-list">
+          <div class="chapter-row"><span class="ch-num">01</span><span class="ch-name">CLAUDE.md — Identity &amp; Persistent Memory</span></div>
+          <div class="chapter-row"><span class="ch-num">02</span><span class="ch-name">Settings &amp; Config — Tool Allowlists</span></div>
+          <div class="chapter-row"><span class="ch-num">03</span><span class="ch-name">MCP Servers — Connect Any Tool</span></div>
+          <div class="chapter-row"><span class="ch-num">04</span><span class="ch-name">Sub-Agents — Your AI Agile Team</span></div>
+          <div class="chapter-row"><span class="ch-num">05</span><span class="ch-name">Knowledge Base — Domain Memory</span></div>
+          <div class="chapter-row"><span class="ch-num">06</span><span class="ch-name">Slash Commands — Packaged Workflows</span></div>
+          <div class="chapter-row"><span class="ch-num">07</span><span class="ch-name">Skills — Auto-Invoked Behaviors</span></div>
+        </div>
+        <div class="brain-price-row">
+          <div class="brain-price">$6.99</div>
+          <div class="brain-formats">
+            <span class="fmt-badge">PDF</span>
+            <span class="fmt-badge">DOCX</span>
+            <span class="fmt-badge">Instant</span>
+          </div>
+        </div>
+        <a class="brain-cta" href="https://www.claudesbrain.com" target="_blank" rel="noopener">Get the Ebook — One-Time Purchase</a>
+      </div><!-- /.brain-card -->
+      </div><!-- /.brain-right -->
+    </div>
+  </div>
+</section>
+
+<!-- Community CTA -->
+<section id="community">
+  <div class="container">
+    <div class="community-inner reveal">
+      <span class="tag tag-blue">Saint Petersburg, Florida</span>
+      <h2 class="display" style="margin-top:20px">AI BELONGS<br>TO <em>ALL OF US.</em></h2>
+      <p>St. Pete AI is free to join. Come to a meetup. Ask questions. Share what you're building. You belong here.</p>
+      <div class="community-ctas">
+        <a class="btn-blue" href="mailto:info@stpeteai.org?subject=I want to join St. Pete AI">Join the Community</a>
+        <a class="btn-outline-lt" href="#programs">See What's Coming Up</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-left reveal">
+        <span class="tag tag-blue">Get in Touch</span>
+        <h2>We'd Love to<br>Hear From You.</h2>
+        <p>Questions about membership, partnerships, speaking at an event, or just want to say hi — drop us a line and we'll get back to you.</p>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">✉️</div>
+          <div class="contact-detail-text">
+            Email us directly at<br>
+            <a href="mailto:info@stpeteai.org">info@stpeteai.org</a>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-icon">📍</div>
+          <div class="contact-detail-text">Saint Petersburg, Florida<br>501(c)(3) Nonprofit Organization</div>
+        </div>
+      </div>
+      <div class="reveal">
+        <form class="contact-form" method="post" action="/contact">
+          <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+          <div class="cfield">
+            <label for="c-name">Full Name *</label>
+            <input type="text" id="c-name" name="name" placeholder="Your name" required>
+          </div>
+          <div class="cfield">
+            <label for="c-email">Email Address *</label>
+            <input type="email" id="c-email" name="email" placeholder="your@email.com" required>
+          </div>
+          <div class="cfield">
+            <label for="c-subject">Subject</label>
+            <select id="c-subject" name="subject">
+              <option>General</option>
+              <option>Membership</option>
+              <option>Partnership</option>
+              <option>Speaking / Events</option>
+              <option>Press</option>
+            </select>
+          </div>
+          <div class="cfield">
+            <label for="c-message">Message *</label>
+            <textarea id="c-message" name="message" placeholder="What's on your mind?" required></textarea>
+          </div>
+          <button type="submit" class="contact-submit">Send Message →</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <a class="footer-brand-name" href="/"><img src="/static/images/Logo_0.0.png" alt="St. Pete AI" class="footer-logo">ST. PETE AI</a>
+        <div class="footer-tagline">AI education, ethics, and community resources for Saint Petersburg, Florida.</div>
+      </div>
+      <div class="footer-col">
+        <h5>Organization</h5>
+        <a href="#mission">Mission</a>
+        <a href="#programs">Programs</a>
+        <a href="#membership">Membership</a>
+        <a href="#meetup">Meetup</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <a href="#claudes-brain">Claude's Brain Guide</a>
+        <a href="https://www.claudesbrain.com" target="_blank" rel="noopener">claudesbrain.com</a>
+      </div>
+      <div class="footer-col">
+        <h5>Connect</h5>
+        <a href="mailto:info@stpeteai.org">info@stpeteai.org</a>
+        <a href="https://twitter.com" target="_blank" rel="noopener">Twitter / X</a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">&copy; 2026 St. Pete AI &middot; Saint Petersburg, Florida</div>
+      <div class="footer-501">501(c)(3) Nonprofit Organization</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('vis'), i * 80);
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.07, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Mobile nav
+const menuBtn = document.getElementById('menuBtn');
+const navLinks = document.querySelector('.nav-links');
+menuBtn.addEventListener('click', () => {
+  const open = navLinks.style.display === 'flex';
+  Object.assign(navLinks.style, open ? { display: '' } : {
+    display: 'flex', flexDirection: 'column', position: 'absolute',
+    top: '64px', left: '0', right: '0', background: 'var(--cream)',
+    padding: '16px 20px 24px', borderBottom: '1px solid var(--border)',
+    gap: '16px', zIndex: '99'
+  });
+});
+document.querySelectorAll('.nav-links a').forEach(a => {
+  a.addEventListener('click', () => { if (window.innerWidth <= 768) navLinks.style.display = ''; });
+});
+
+// Modals
+function openModal(tier) {
+  document.getElementById('modal-' + tier).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(tier) {
+  document.getElementById('modal-' + tier).classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    ['community','supporter','champion'].forEach(closeModal);
+  }
+});
+
+// Auto-scroll to flash message anchor on load
+if (window.location.hash) {
+  setTimeout(() => {
+    const el = document.querySelector(window.location.hash);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+</script>
+
+</body>
+</html>

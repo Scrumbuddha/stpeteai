@@ -1,0 +1,58 @@
+{% extends "admin/layout.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_sub %}Overview of St. Pete AI activity{% endblock %}
+
+{% block content %}
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="icon">👥</div>
+    <div class="n">{{ member_count }}</div>
+    <div class="l">Total Members</div>
+  </div>
+  <div class="stat-card">
+    <div class="icon">📅</div>
+    <div class="n">{{ event_count }}</div>
+    <div class="l">Active Events</div>
+  </div>
+  <div class="stat-card">
+    <div class="icon">✉️</div>
+    <div class="n">{{ unread_count }}</div>
+    <div class="l">Unread Messages</div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <div>
+      <div class="card-title">Recent Signups</div>
+      <div class="card-sub">Last 5 membership requests</div>
+    </div>
+    <a class="btn btn-primary btn-sm" href="/admin/members">View All</a>
+  </div>
+  {% if recent_members %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th><th>Email</th><th>Tier</th><th>Status</th><th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in recent_members %}
+        <tr>
+          <td style="font-weight:600;color:#fff">{{ m.name }}</td>
+          <td style="color:#7a93c8">{{ m.email }}</td>
+          <td><span class="badge badge-{{ m.tier }}">{{ m.tier }}</span></td>
+          <td><span class="badge badge-{{ m.status }}">{{ m.status }}</span></td>
+          <td style="color:#5c6680;font-family:'Roboto Mono',monospace;font-size:.78rem">{{ m.created_at.strftime('%b %d, %Y') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p style="color:#5c6680;font-size:.88rem;padding:16px 0">No members yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

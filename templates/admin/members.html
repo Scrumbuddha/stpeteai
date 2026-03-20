@@ -1,0 +1,140 @@
+{% extends "admin/layout.html" %}
+{% block title %}Members{% endblock %}
+{% block page_title %}Members{% endblock %}
+{% block page_sub %}{{ members|length }} member{% if members|length != 1 %}s{% endif %} shown{% endblock %}
+
+{% block content %}
+<style>
+.bulk-bar{display:none;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;background:rgba(91,156,246,.07);border:1px solid rgba(91,156,246,.2);border-radius:8px;margin-bottom:16px}
+.bulk-bar.active{display:flex}
+.bulk-count{font-size:.83rem;color:var(--sky);font-weight:600;flex:1}
+.btn-bulk{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:5px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'Roboto',sans-serif;border:1px solid;transition:all .15s}
+.btn-bulk-activate{background:rgba(42,157,92,.12);border-color:rgba(42,157,92,.3);color:#6ee0a0}.btn-bulk-activate:hover{background:rgba(42,157,92,.22)}
+.btn-bulk-deactivate{background:rgba(255,255,255,.05);border-color:var(--border);color:var(--text-muted)}.btn-bulk-deactivate:hover{color:#fff;background:rgba(255,255,255,.09)}
+.btn-bulk-delete{background:rgba(224,82,82,.12);border-color:rgba(224,82,82,.3);color:var(--red)}.btn-bulk-delete:hover{background:rgba(224,82,82,.22)}
+input[type=checkbox]{accent-color:var(--sky);width:15px;height:15px;cursor:pointer;vertical-align:middle}
+</style>
+
+<div class="page-header">
+  <h1>Members</h1>
+</div>
+
+<!-- Filters -->
+<div class="filter-bar">
+  <span style="font-size:.8rem;color:#5c6680;font-family:'Roboto Mono',monospace">TIER:</span>
+  {% for t in [('all','All'), ('community','Community'), ('supporter','Supporter'), ('champion','Champion')] %}
+  <a class="filter-btn {% if active_tier == t[0] %}active{% endif %}"
+     href="/admin/members?tier={{ t[0] }}&status={{ active_status }}">{{ t[1] }}</a>
+  {% endfor %}
+  &nbsp;
+  <span style="font-size:.8rem;color:#5c6680;font-family:'Roboto Mono',monospace">STATUS:</span>
+  {% for s in [('all','All'), ('pending','Pending'), ('active','Active'), ('inactive','Inactive')] %}
+  <a class="filter-btn {% if active_status == s[0] %}active{% endif %}"
+     href="/admin/members?tier={{ active_tier }}&status={{ s[0] }}">{{ s[1] }}</a>
+  {% endfor %}
+</div>
+
+<!-- Bulk action bar (outside any form) -->
+<div class="bulk-bar" id="bulk-bar">
+  <span class="bulk-count" id="bulk-count">0 selected</span>
+  <button type="button" class="btn-bulk btn-bulk-activate" onclick="submitBulk('active', 'Set selected members to Active?')">Set Active</button>
+  <button type="button" class="btn-bulk btn-bulk-deactivate" onclick="submitBulk('inactive', 'Set selected members to Inactive?')">Set Inactive</button>
+  <button type="button" class="btn-bulk btn-bulk-delete" onclick="submitBulk('delete', 'Delete selected members? This cannot be undone.')">Delete</button>
+  <button type="button" onclick="clearSelection()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.8rem;padding:4px 8px">Clear</button>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:36px"><input type="checkbox" id="select-all" title="Select all"></th>
+          <th>Name</th><th>Email</th><th>Tier</th><th>Message</th><th>Status</th><th>Joined</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in members %}
+        <tr>
+          <td><input type="checkbox" class="row-check" value="{{ m.id }}"></td>
+          <td style="font-weight:600;color:#fff;white-space:nowrap">{{ m.name }}</td>
+          <td style="color:#7a93c8">{{ m.email }}</td>
+          <td><span class="badge badge-{{ m.tier }}">{{ m.tier }}</span></td>
+          <td style="color:#5c6680;font-size:.82rem;max-width:200px">
+            {% if m.message %}
+              <span title="{{ m.message }}">{{ m.message[:60] }}{% if m.message|length > 60 %}…{% endif %}</span>
+            {% else %}—{% endif %}
+          </td>
+          <td>
+            <form method="post" action="/admin/members/{{ m.id }}/status" style="display:inline-flex;gap:6px;align-items:center">
+              <select name="status" style="width:auto;padding:4px 8px;font-size:.78rem">
+                <option {% if m.status=='pending' %}selected{% endif %} value="pending">Pending</option>
+                <option {% if m.status=='active' %}selected{% endif %} value="active">Active</option>
+                <option {% if m.status=='inactive' %}selected{% endif %} value="inactive">Inactive</option>
+              </select>
+              <button class="btn btn-ghost btn-sm" type="submit">Save</button>
+            </form>
+          </td>
+          <td style="color:#5c6680;font-family:'Roboto Mono',monospace;font-size:.75rem;white-space:nowrap">
+            {{ m.created_at.strftime('%b %d, %Y') }}
+          </td>
+          <td>
+            <form method="post" action="/admin/members/{{ m.id }}/delete"
+                  onsubmit="return confirm('Delete {{ m.name }}?')">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" style="text-align:center;color:#5c6680;padding:32px">No members found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const selectAll = document.getElementById('select-all');
+const bulkBar   = document.getElementById('bulk-bar');
+const bulkCount = document.getElementById('bulk-count');
+
+function getChecked() { return document.querySelectorAll('.row-check:checked'); }
+function getAll()     { return document.querySelectorAll('.row-check'); }
+
+function updateBulkBar() {
+  const n = getChecked().length, total = getAll().length;
+  bulkCount.textContent = n + ' selected';
+  bulkBar.classList.toggle('active', n > 0);
+  selectAll.indeterminate = n > 0 && n < total;
+  selectAll.checked = n > 0 && n === total;
+}
+
+selectAll.addEventListener('change', function() {
+  getAll().forEach(cb => cb.checked = this.checked);
+  updateBulkBar();
+});
+getAll().forEach(cb => cb.addEventListener('change', updateBulkBar));
+
+function clearSelection() {
+  getAll().forEach(cb => cb.checked = false);
+  selectAll.checked = false;
+  updateBulkBar();
+}
+
+function submitBulk(action, msg) {
+  if (!confirm(msg)) return;
+  const ids = Array.from(getChecked()).map(cb => cb.value);
+  const form = document.createElement('form');
+  form.method = 'post';
+  form.action = '/admin/members/bulk';
+  const addField = (name, val) => {
+    const inp = document.createElement('input');
+    inp.type = 'hidden'; inp.name = name; inp.value = val;
+    form.appendChild(inp);
+  };
+  addField('action', action);
+  ids.forEach(id => addField('selected_ids', id));
+  document.body.appendChild(form);
+  form.submit();
+}
+</script>
+{% endblock %}

@@ -379,7 +379,7 @@ footer{background:var(--dark);border-top:1px solid var(--border-dark);padding:48
     <div class="modal-price">{{ price }}</div>
     <form class="modal-form" method="post" action="/join">
       <input type="hidden" name="tier" value="{{ tier }}">
-      <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+      <input type="text" name="h_field" style="position:absolute;left:-9999px;opacity:0" tabindex="-1" autocomplete="off">
       <div class="field">
         <label for="{{ tier }}-name">Full Name *</label>
         <input type="text" id="{{ tier }}-name" name="name" placeholder="Your name" required>
@@ -763,7 +763,7 @@ footer{background:var(--dark);border-top:1px solid var(--border-dark);padding:48
       </div>
       <div class="reveal">
         <form class="contact-form" method="post" action="/contact">
-          <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+          <input type="text" name="h_field" style="position:absolute;left:-9999px;opacity:0" tabindex="-1" autocomplete="off">
           <div class="cfield">
             <label for="c-name">Full Name *</label>
             <input type="text" id="c-name" name="name" placeholder="Your name" required>

@@ -148,7 +148,7 @@ def robots():
 @limiter.limit('5 per minute; 20 per hour', error_message='Too many requests. Please try again later.')
 def join():
     # Honeypot — bots fill this hidden field, humans don't
-    if request.form.get('website', ''):
+    if request.form.get('h_field', ''):
         return redirect('/#membership')
 
     name    = request.form.get('name', '').strip()[:120]
@@ -180,7 +180,7 @@ def join():
 @limiter.limit('5 per minute; 20 per hour', error_message='Too many requests. Please try again later.')
 def contact():
     # Honeypot
-    if request.form.get('website', ''):
+    if request.form.get('h_field', ''):
         return redirect('/#contact')
 
     name    = request.form.get('name', '').strip()[:120]

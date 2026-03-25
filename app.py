@@ -433,6 +433,32 @@ def admin_contact_delete(cid):
 
 # ── Bootstrap ─────────────────────────────────────────────────────────────
 
+def _ensure_database():
+    """If using PostgreSQL, create the database if it doesn't exist yet."""
+    db_url = os.environ.get('DATABASE_URL', '')
+    if not db_url.startswith('postgresql'):
+        return
+    try:
+        import psycopg2
+        from urllib.parse import urlparse
+        p = urlparse(db_url)
+        conn = psycopg2.connect(
+            host=p.hostname, port=p.port or 5432,
+            user=p.username, password=p.password,
+            dbname='postgres'
+        )
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute("SELECT 1 FROM pg_database WHERE datname = %s", (p.path.lstrip('/'),))
+        if not cur.fetchone():
+            cur.execute(f'CREATE DATABASE "{p.path.lstrip("/")}"')
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print(f'[db init] {e}')
+
+_ensure_database()
+
 with app.app_context():
     db.create_all()
     seed_events()

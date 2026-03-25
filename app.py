@@ -1,8 +1,10 @@
+import csv
+import io
 import os
 import re
 from datetime import datetime, date
 from flask import (Flask, render_template, request, redirect, url_for,
-                   session, flash)
+                   session, flash, Response)
 from flask_sqlalchemy import SQLAlchemy
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -259,6 +261,38 @@ def admin_members():
     members = q.order_by(Member.created_at.desc()).all()
     return render_template('admin/members.html', members=members,
                            active_tier=tier, active_status=status)
+
+
+@app.route('/admin/members/export')
+@admin_required
+def admin_members_export():
+    tier   = request.args.get('tier', 'all')
+    status = request.args.get('status', 'all')
+    q = Member.query
+    if tier != 'all':
+        q = q.filter_by(tier=tier)
+    if status != 'all':
+        q = q.filter_by(status=status)
+    members = q.order_by(Member.created_at.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Name', 'Email', 'Tier', 'Status', 'Message', 'Joined'])
+    for m in members:
+        writer.writerow([
+            m.name, m.email, m.tier, m.status,
+            m.message or '',
+            m.created_at.strftime('%Y-%m-%d %H:%M') if m.created_at else '',
+        ])
+    output.seek(0)
+    filename = 'members'
+    if tier != 'all':
+        filename += f'-{tier}'
+    if status != 'all':
+        filename += f'-{status}'
+    filename += '.csv'
+    return Response(output.getvalue(), mimetype='text/csv',
+                    headers={'Content-Disposition': f'attachment; filename={filename}'})
 
 
 @app.route('/admin/members/<int:mid>/status', methods=['POST'])

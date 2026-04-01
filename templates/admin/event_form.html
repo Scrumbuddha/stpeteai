@@ -1,7 +1,7 @@
 {% extends "admin/layout.html" %}
 {% block title %}{{ action }} Event{% endblock %}
 {% block page_title %}{{ action }} Event{% endblock %}
-{% block page_sub %}{% if event %}Editing: {{ event.title }}{% else %}Create a new event{% endblock %}
+{% block page_sub %}{% if event %}Editing: {{ event.title }}{% else %}Create a new event{% endif %}{% endblock %}
 
 {% block content %}
 <div class="page-header">

@@ -140,6 +140,12 @@ select option{background:var(--dark-card)}
     <a href="/admin/events" class="{% if 'event' in request.endpoint %}active{% endif %}">
       <span class="ico">📅</span> Events
     </a>
+    <a href="/admin/lessons" class="{% if 'lesson' in request.endpoint %}active{% endif %}">
+      <span class="ico">📚</span> Lessons
+    </a>
+    <a href="/admin/bookings" class="{% if 'booking' in request.endpoint %}active{% endif %}">
+      <span class="ico">🎟️</span> Bookings
+    </a>
     <a href="/admin/contacts" class="{% if request.endpoint == 'admin_contacts' %}active{% endif %}">
       <span class="ico">✉️</span> Messages
     </a>

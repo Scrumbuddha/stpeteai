@@ -4,7 +4,7 @@
 {% block page_sub %}Overview of St. Pete AI activity{% endblock %}
 
 {% block content %}
-<div class="stats-row">
+<div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
   <div class="stat-card">
     <div class="icon">👥</div>
     <div class="n">{{ member_count }}</div>
@@ -14,6 +14,11 @@
     <div class="icon">📅</div>
     <div class="n">{{ event_count }}</div>
     <div class="l">Active Events</div>
+  </div>
+  <div class="stat-card">
+    <div class="icon">📚</div>
+    <div class="n">{{ open_slots }}</div>
+    <div class="l">Open Lesson Slots</div>
   </div>
   <div class="stat-card">
     <div class="icon">✉️</div>

@@ -26,6 +26,50 @@ limiter = Limiter(
 ALLOWED_TIERS = {'community', 'supporter', 'champion'}
 EMAIL_RE = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
+import boto3
+
+AWS_REGION   = os.environ.get('AWS_REGION', 'us-east-1')
+FROM_EMAIL   = os.environ.get('FROM_EMAIL', 'info@stpeteai.org')
+ADMIN_EMAIL  = os.environ.get('ADMIN_NOTIFY_EMAIL', 'scrumbuddhist@gmail.com')
+
+
+def _ses_send(to_email, subject, body):
+    """Send plain-text email via SES. Fails silently."""
+    try:
+        boto3.client('ses', region_name=AWS_REGION).send_email(
+            Source=FROM_EMAIL,
+            Destination={'ToAddresses': [to_email]},
+            Message={'Subject': {'Data': subject, 'Charset': 'UTF-8'},
+                     'Body':    {'Text': {'Data': body,    'Charset': 'UTF-8'}}},
+        )
+    except Exception:
+        pass
+
+
+def send_booking_confirmation(booking, slot):
+    date_str = slot.slot_date.strftime('%B %d, %Y')
+    body = (f"Hi {booking.name},\n\n"
+            f"Your private lesson with St. Pete AI is confirmed!\n\n"
+            f"  Date:     {date_str}\n"
+            f"  Time:     {slot.start_time}\n"
+            f"  Length:   {slot.duration} minutes\n"
+            + (f"  Instructor: {slot.staff_name}\n" if slot.staff_name else "")
+            + (f"\nNotes: {slot.notes}\n" if slot.notes else "")
+            + f"\nWe'll be in touch at {booking.email} with any details.\n\n"
+              f"-- St. Pete AI\nhttps://stpeteai.org\n")
+    _ses_send(booking.email, "Your St. Pete AI lesson is confirmed!", body)
+
+    admin_body = (f"New lesson booking!\n\n"
+                  f"  Name:   {booking.name}\n"
+                  f"  Email:  {booking.email}\n"
+                  f"  Phone:  {booking.phone or 'not provided'}\n"
+                  f"  Skill:  {booking.skill_level or 'not provided'}\n"
+                  f"  Topic:  {booking.topic or 'not provided'}\n\n"
+                  f"  Date:   {date_str}\n"
+                  f"  Time:   {slot.start_time}\n")
+    _ses_send(ADMIN_EMAIL, f"New booking: {booking.name} — {date_str} {slot.start_time}", admin_body)
+
+
 db = SQLAlchemy(app)
 
 
@@ -61,6 +105,29 @@ class ContactMessage(db.Model):
     message    = db.Column(db.Text, nullable=False)
     read       = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class LessonSlot(db.Model):
+    id         = db.Column(db.Integer, primary_key=True)
+    slot_date  = db.Column(db.Date, nullable=False)
+    start_time = db.Column(db.String(20), nullable=False)
+    duration   = db.Column(db.Integer, default=60)          # minutes
+    staff_name = db.Column(db.String(120), default='')
+    notes      = db.Column(db.Text, default='')
+    active     = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class LessonBooking(db.Model):
+    id          = db.Column(db.Integer, primary_key=True)
+    slot_id     = db.Column(db.Integer, db.ForeignKey('lesson_slot.id', ondelete='CASCADE'), nullable=False)
+    name        = db.Column(db.String(120), nullable=False)
+    email       = db.Column(db.String(200), nullable=False)
+    phone       = db.Column(db.String(30), default='')
+    topic       = db.Column(db.Text, default='')
+    skill_level = db.Column(db.String(30), default='')
+    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+    slot = db.relationship('LessonSlot', backref=db.backref('booking', uselist=False, cascade='all, delete-orphan'))
 
 
 # ── Seed data ─────────────────────────────────────────────────────────────
@@ -105,7 +172,12 @@ def index():
               .filter_by(active=True)
               .order_by(Event.event_date.desc())
               .limit(3).all())
-    return render_template('index.html', events=events)
+    slots = (LessonSlot.query
+             .filter_by(active=True)
+             .filter(LessonSlot.slot_date >= date.today())
+             .order_by(LessonSlot.slot_date, LessonSlot.start_time)
+             .all())
+    return render_template('index.html', events=events, slots=slots)
 
 
 @app.route('/sitemap.xml')
@@ -206,6 +278,39 @@ def contact():
     return redirect('/#contact')
 
 
+@app.route('/book/<int:slot_id>', methods=['POST'])
+@limiter.limit('5 per minute; 20 per hour', error_message='Too many requests. Please try again later.')
+def book_lesson(slot_id):
+    if request.form.get('h_field', ''):
+        return redirect('/#lessons')
+    slot = LessonSlot.query.get_or_404(slot_id)
+    if not slot.active or slot.booking:
+        flash('That slot is no longer available.', 'error')
+        return redirect('/#lessons')
+
+    name        = request.form.get('name',  '').strip()[:120]
+    email       = request.form.get('email', '').strip()[:200]
+    phone       = request.form.get('phone', '').strip()[:30]
+    topic       = request.form.get('topic', '').strip()[:1000]
+    skill_level = request.form.get('skill_level', '').strip()
+
+    if not name or not email:
+        flash('Please fill in your name and email.', 'error')
+        return redirect('/#lessons')
+    if not EMAIL_RE.match(email):
+        flash('Please enter a valid email address.', 'error')
+        return redirect('/#lessons')
+
+    booking = LessonBooking(slot_id=slot_id, name=name, email=email,
+                            phone=phone, topic=topic, skill_level=skill_level)
+    db.session.add(booking)
+    db.session.commit()
+    send_booking_confirmation(booking, slot)
+    flash(f'Your lesson on {slot.slot_date.strftime("%B %d")} at {slot.start_time} is confirmed! '
+          f'A confirmation has been sent to {email}.', 'success')
+    return redirect('/#lessons')
+
+
 # ── Admin auth ────────────────────────────────────────────────────────────
 
 @app.route('/admin')
@@ -238,11 +343,17 @@ def admin_dashboard():
     member_count   = Member.query.count()
     event_count    = Event.query.filter_by(active=True).count()
     unread_count   = ContactMessage.query.filter_by(read=False).count()
+    open_slots     = (LessonSlot.query
+                      .filter_by(active=True)
+                      .filter(LessonSlot.slot_date >= date.today())
+                      .all())
+    open_slots_count = sum(1 for s in open_slots if s.booking is None)
     recent_members = Member.query.order_by(Member.created_at.desc()).limit(5).all()
     return render_template('admin/dashboard.html',
                            member_count=member_count,
                            event_count=event_count,
                            unread_count=unread_count,
+                           open_slots=open_slots_count,
                            recent_members=recent_members)
 
 
@@ -429,6 +540,104 @@ def admin_contact_delete(cid):
     db.session.delete(msg)
     db.session.commit()
     return redirect(url_for('admin_contacts'))
+
+
+# ── Admin lesson slots ────────────────────────────────────────────────────
+
+@app.route('/admin/lessons')
+@admin_required
+def admin_lessons():
+    slots = LessonSlot.query.order_by(LessonSlot.slot_date, LessonSlot.start_time).all()
+    return render_template('admin/lessons.html', slots=slots)
+
+
+@app.route('/admin/lessons/new', methods=['GET', 'POST'])
+@admin_required
+def admin_lesson_new():
+    if request.method == 'POST':
+        slot = LessonSlot(
+            slot_date  = datetime.strptime(request.form['slot_date'], '%Y-%m-%d').date(),
+            start_time = request.form.get('start_time', '').strip(),
+            duration   = int(request.form.get('duration') or 60),
+            staff_name = request.form.get('staff_name', '').strip(),
+            notes      = request.form.get('notes', '').strip(),
+            active     = 'active' in request.form,
+        )
+        db.session.add(slot)
+        db.session.commit()
+        flash('Lesson slot created.', 'success')
+        return redirect(url_for('admin_lessons'))
+    return render_template('admin/lesson_form.html', slot=None, action='New')
+
+
+@app.route('/admin/lessons/<int:lid>/edit', methods=['GET', 'POST'])
+@admin_required
+def admin_lesson_edit(lid):
+    slot = LessonSlot.query.get_or_404(lid)
+    if request.method == 'POST':
+        slot.slot_date  = datetime.strptime(request.form['slot_date'], '%Y-%m-%d').date()
+        slot.start_time = request.form.get('start_time', '').strip()
+        slot.duration   = int(request.form.get('duration') or 60)
+        slot.staff_name = request.form.get('staff_name', '').strip()
+        slot.notes      = request.form.get('notes', '').strip()
+        slot.active     = 'active' in request.form
+        db.session.commit()
+        flash('Lesson slot updated.', 'success')
+        return redirect(url_for('admin_lessons'))
+    return render_template('admin/lesson_form.html', slot=slot, action='Edit')
+
+
+@app.route('/admin/lessons/<int:lid>/delete', methods=['POST'])
+@admin_required
+def admin_lesson_delete(lid):
+    slot = LessonSlot.query.get_or_404(lid)
+    db.session.delete(slot)
+    db.session.commit()
+    flash('Slot deleted.', 'info')
+    return redirect(url_for('admin_lessons'))
+
+
+# ── Admin bookings ─────────────────────────────────────────────────────────
+
+@app.route('/admin/bookings')
+@admin_required
+def admin_bookings():
+    bookings = (LessonBooking.query
+                .join(LessonSlot)
+                .order_by(LessonSlot.slot_date.desc(), LessonSlot.start_time)
+                .all())
+    return render_template('admin/bookings.html', bookings=bookings)
+
+
+@app.route('/admin/bookings/export')
+@admin_required
+def admin_bookings_export():
+    bookings = (LessonBooking.query.join(LessonSlot)
+                .order_by(LessonSlot.slot_date.desc()).all())
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Name', 'Email', 'Phone', 'Skill Level', 'Topic',
+                     'Date', 'Time', 'Duration', 'Instructor', 'Booked At'])
+    for b in bookings:
+        writer.writerow([b.name, b.email, b.phone or '', b.skill_level or '',
+                         b.topic or '', b.slot.slot_date.strftime('%Y-%m-%d'),
+                         b.slot.start_time, f'{b.slot.duration} min',
+                         b.slot.staff_name or '',
+                         b.created_at.strftime('%Y-%m-%d %H:%M') if b.created_at else ''])
+    output.seek(0)
+    return Response(output.getvalue(), mimetype='text/csv',
+                    headers={'Content-Disposition': 'attachment; filename=lesson-bookings.csv'})
+
+
+@app.route('/admin/bookings/<int:bid>/delete', methods=['POST'])
+@admin_required
+def admin_booking_delete(bid):
+    booking = LessonBooking.query.get_or_404(bid)
+    name = booking.name
+    db.session.delete(booking)
+    db.session.commit()
+    flash(f'Booking for {name} removed.', 'info')
+    return redirect(url_for('admin_bookings'))
 
 
 # ── Bootstrap ─────────────────────────────────────────────────────────────

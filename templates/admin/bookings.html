@@ -1,0 +1,53 @@
+{% extends "admin/layout.html" %}
+{% block title %}Bookings{% endblock %}
+{% block page_title %}Bookings{% endblock %}
+{% block page_sub %}Private lesson bookings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Bookings</h1>
+  <a class="btn btn-ghost btn-sm" href="/admin/bookings/export">↓ Export CSV</a>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th><th>Email</th><th>Phone</th><th>Skill</th><th>Topic</th><th>Date &amp; Time</th><th>Instructor</th><th>Booked</th><th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in bookings %}
+        <tr>
+          <td style="font-weight:600;color:#fff;white-space:nowrap">{{ b.name }}</td>
+          <td style="color:#7a93c8;font-size:.82rem">{{ b.email }}</td>
+          <td style="color:#5c6680;font-size:.82rem">{{ b.phone or '—' }}</td>
+          <td>
+            {% if b.skill_level %}
+            <span class="badge badge-{{ b.skill_level }}">{{ b.skill_level|title }}</span>
+            {% else %}—{% endif %}
+          </td>
+          <td style="color:#5c6680;font-size:.82rem;max-width:200px">{{ b.topic or '—' }}</td>
+          <td style="font-family:'Roboto Mono',monospace;font-size:.78rem;color:#7a93c8;white-space:nowrap">
+            {{ b.slot.slot_date.strftime('%b %d, %Y') }}<br>{{ b.slot.start_time }}
+          </td>
+          <td style="color:#5c6680;font-size:.82rem">{{ b.slot.staff_name or '—' }}</td>
+          <td style="font-family:'Roboto Mono',monospace;font-size:.75rem;color:#5c6680;white-space:nowrap">
+            {{ b.created_at.strftime('%b %d, %Y') if b.created_at else '—' }}
+          </td>
+          <td>
+            <form method="post" action="/admin/bookings/{{ b.id }}/delete"
+                  onsubmit="return confirm('Remove this booking for {{ b.name }}?')">
+              <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9" style="text-align:center;color:#5c6680;padding:32px">No bookings yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

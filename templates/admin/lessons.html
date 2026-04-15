@@ -1,0 +1,61 @@
+{% extends "admin/layout.html" %}
+{% block title %}Lesson Slots{% endblock %}
+{% block page_title %}Lesson Slots{% endblock %}
+{% block page_sub %}Manage available private lesson slots{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Lesson Slots</h1>
+  <a class="btn btn-primary" href="/admin/lessons/new">+ Add Slot</a>
+</div>
+
+<div class="card" style="padding:0">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th><th>Time</th><th>Duration</th><th>Instructor</th><th>Notes</th><th>Status</th><th>Visible</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in slots %}
+        <tr>
+          <td style="font-family:'Roboto Mono',monospace;font-size:.82rem;white-space:nowrap;color:#7a93c8">
+            {{ s.slot_date.strftime('%b %d, %Y') }}
+          </td>
+          <td style="white-space:nowrap;color:#fff;font-weight:600">{{ s.start_time }}</td>
+          <td style="color:#5c6680;font-size:.82rem">{{ s.duration }} min</td>
+          <td style="color:#5c6680;font-size:.82rem">{{ s.staff_name or '—' }}</td>
+          <td style="color:#5c6680;font-size:.82rem;max-width:180px">{{ s.notes or '—' }}</td>
+          <td>
+            {% if s.booking %}
+              <div style="font-size:.8rem;color:#6ee0a0;font-weight:600">Booked</div>
+              <div style="font-size:.75rem;color:#7a93c8;margin-top:2px">{{ s.booking.name }}</div>
+              <div style="font-size:.75rem;color:#5c6680">{{ s.booking.email }}</div>
+            {% else %}
+              <span class="badge badge-active">Open</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="post" action="/admin/lessons/{{ s.id }}/edit" style="display:inline">
+              <span style="font-size:.82rem;color:{% if s.active %}#6ee0a0{% else %}#5c6680{% endif %}">
+                {% if s.active %}✓ On{% else %}Off{% endif %}
+              </span>
+            </form>
+          </td>
+          <td style="white-space:nowrap">
+            <a class="btn btn-ghost btn-sm" href="/admin/lessons/{{ s.id }}/edit">Edit</a>
+            <form method="post" action="/admin/lessons/{{ s.id }}/delete" style="display:inline"
+                  onsubmit="return confirm('Delete this slot{% if s.booking %} and its booking{% endif %}?')">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" style="text-align:center;color:#5c6680;padding:32px">No lesson slots yet. <a href="/admin/lessons/new" style="color:var(--sky)">Add one</a>.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

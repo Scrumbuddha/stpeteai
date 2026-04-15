@@ -47,6 +47,7 @@ section{position:relative}
 .display{font-family:'Roboto',sans-serif;font-weight:900;letter-spacing:-.02em;line-height:.95}
 .tag{display:inline-flex;align-items:center;gap:8px;background:rgba(0,0,0,.07);border:1px solid rgba(0,0,0,.12);border-radius:100px;padding:5px 14px;font-family:'Roboto Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
 .tag-blue{background:rgba(30,95,196,.1);border-color:rgba(30,95,196,.3);color:var(--blue)}
+.tag-teal{background:rgba(12,165,165,.1);border-color:rgba(12,165,165,.3);color:var(--teal)}
 
 /* ── Announce Bar ───────────────────────────────────────────── */
 .announce{background:var(--blue);color:#fff;text-align:center;padding:10px 20px;font-family:'Roboto Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}
@@ -207,6 +208,29 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
 .meetup-footer-note a:hover{color:var(--sky)}
 @media(max-width:1024px){.meetup-grid{grid-template-columns:1fr}.meetup-stats{gap:24px}}
 
+/* ── Private Lessons Section ────────────────────────────────── */
+#lessons{padding:100px 0;background:linear-gradient(180deg,var(--dark) 0%,#090e1a 100%);position:relative;overflow:hidden}
+#lessons::before{content:'';position:absolute;left:-100px;top:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(12,165,165,.1),transparent 70%);pointer-events:none}
+.lessons-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+.lessons-left .tag{margin-bottom:24px}
+.lessons-left h2{font-family:'Roboto',sans-serif;font-weight:900;font-size:clamp(2rem,4vw,3rem);line-height:.95;letter-spacing:-.02em;margin-bottom:20px;margin-top:16px;background:linear-gradient(130deg,#fff 0%,#c8fcf4 55%,var(--teal) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lessons-left p{font-size:1rem;color:#7a93c8;line-height:1.75;margin-bottom:32px}
+.slot-list{display:flex;flex-direction:column;gap:14px}
+.slot-card{background:var(--dark-card);border:1px solid var(--border-dark);border-radius:12px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;transition:all .25s}
+.slot-card:hover{border-color:rgba(12,165,165,.35);transform:translateX(4px)}
+.slot-card.booked{opacity:.45;pointer-events:none}
+.slot-info{display:flex;gap:18px;align-items:center}
+.slot-date-badge{flex-shrink:0;width:52px;text-align:center;background:rgba(12,165,165,.1);border:1px solid rgba(12,165,165,.2);border-radius:8px;padding:10px 6px}
+.slot-date-badge .slot-mo{font-family:'Roboto Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);display:block}
+.slot-date-badge .slot-dy{font-family:'Roboto',sans-serif;font-weight:900;font-size:1.6rem;line-height:1;color:#fff;display:block}
+.slot-meta h4{font-family:'Roboto',sans-serif;font-weight:700;font-size:.95rem;color:#fff;margin-bottom:4px}
+.slot-meta p{font-size:.8rem;color:#5c6680;line-height:1.4}
+.btn-book{display:inline-flex;align-items:center;padding:8px 18px;border-radius:6px;border:1px solid rgba(12,165,165,.4);background:rgba(12,165,165,.08);color:var(--teal);font-size:.75rem;font-weight:700;font-family:'Roboto Mono',monospace;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.btn-book:hover{background:rgba(12,165,165,.2);border-color:var(--teal)}
+.slot-booked-badge{font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:3px;background:rgba(92,102,128,.12);color:#5c6680;border:1px solid rgba(92,102,128,.2)}
+.lessons-empty{color:#5c6680;font-size:.9rem;padding:24px 0;font-style:italic}
+@media(max-width:1024px){.lessons-grid{grid-template-columns:1fr}}
+
 /* ── Claude's Brain Promo ───────────────────────────────────── */
 #claudes-brain{padding:100px 0;background:var(--cream)}
 .brain-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
@@ -320,8 +344,9 @@ footer{background:var(--dark);border-top:1px solid var(--border-dark);padding:48
 .modal-price{font-family:'Roboto',sans-serif;font-weight:700;font-size:1.1rem;color:var(--blue);margin-bottom:20px}
 .modal-form .field{margin-bottom:16px}
 .modal-form label{display:block;font-size:.8rem;color:#7a93c8;margin-bottom:6px;font-weight:500}
-.modal-form input,.modal-form textarea{width:100%;background:#0d1220;border:1px solid #1e2a40;color:#fff;padding:11px 14px;border-radius:8px;font-size:.9rem;font-family:'Roboto',sans-serif;outline:none;transition:border-color .15s}
-.modal-form input:focus,.modal-form textarea:focus{border-color:var(--blue-lt)}
+.modal-form input,.modal-form textarea,.modal-form select{width:100%;background:#0d1220;border:1px solid #1e2a40;color:#fff;padding:11px 14px;border-radius:8px;font-size:.9rem;font-family:'Roboto',sans-serif;outline:none;transition:border-color .15s}
+.modal-form input:focus,.modal-form textarea:focus,.modal-form select:focus{border-color:var(--blue-lt)}
+.modal-form select option{background:#0d1220;color:#fff}
 .modal-form textarea{resize:vertical;min-height:80px}
 .modal-submit{width:100%;padding:13px;border-radius:8px;border:none;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'Roboto',sans-serif;transition:all .2s;margin-top:4px}
 .modal-submit.community{background:var(--dark-card2);color:#fff;border:1px solid #2a3a55}
@@ -401,6 +426,50 @@ footer{background:var(--dark);border-top:1px solid var(--border-dark);padding:48
 </div>
 {% endfor %}
 
+<!-- Booking Modals (one per lesson slot) -->
+{% for s in slots %}
+<div class="modal-overlay" id="book-modal-{{ s.id }}" onclick="if(event.target===this)closeBook({{ s.id }})">
+  <div class="modal">
+    <button class="modal-close" onclick="closeBook({{ s.id }})">✕</button>
+    <div class="modal-tag community">Book a Lesson</div>
+    <h3>{{ s.slot_date.strftime('%B %d, %Y') }} &middot; {{ s.start_time }}</h3>
+    <div class="modal-price" style="font-size:.9rem;color:#7a93c8;font-weight:400">
+      {{ s.duration }} min session{% if s.staff_name %} with {{ s.staff_name }}{% endif %} &middot; $40 / hr
+    </div>
+    <form class="modal-form" method="post" action="/book/{{ s.id }}">
+      <input type="text" name="h_field" style="position:absolute;left:-9999px;opacity:0" tabindex="-1" autocomplete="off">
+      <div class="field">
+        <label for="bname-{{ s.id }}">Full Name *</label>
+        <input type="text" id="bname-{{ s.id }}" name="name" placeholder="Your name" required>
+      </div>
+      <div class="field">
+        <label for="bemail-{{ s.id }}">Email Address *</label>
+        <input type="email" id="bemail-{{ s.id }}" name="email" placeholder="your@email.com" required>
+      </div>
+      <div class="field">
+        <label for="bphone-{{ s.id }}">Phone <span style="opacity:.5">(optional)</span></label>
+        <input type="tel" id="bphone-{{ s.id }}" name="phone" placeholder="(727) 555-0123">
+      </div>
+      <div class="field">
+        <label for="bskill-{{ s.id }}">Skill Level</label>
+        <select id="bskill-{{ s.id }}" name="skill_level">
+          <option value="">Select…</option>
+          <option value="beginner">Beginner — new to AI</option>
+          <option value="intermediate">Intermediate — some experience</option>
+          <option value="advanced">Advanced — building with AI regularly</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="btopic-{{ s.id }}">Topic / Goals <span style="opacity:.5">(optional)</span></label>
+        <textarea id="btopic-{{ s.id }}" name="topic" placeholder="What would you like to work on or learn?"></textarea>
+      </div>
+      <button type="submit" class="modal-submit supporter">Reserve This Slot</button>
+      <p class="modal-note">A confirmation will be sent to your email. Payment details will be shared separately.</p>
+    </form>
+  </div>
+</div>
+{% endfor %}
+
 <!-- Announcement Bar -->
 <div class="announce">
   &#9679;&nbsp; Spring 2026 membership now open &mdash; <a href="#membership">Join St. Pete AI today</a>
@@ -417,6 +486,7 @@ footer{background:var(--dark);border-top:1px solid var(--border-dark);padding:48
       <a href="#programs">Programs</a>
       <a href="#membership">Membership</a>
       <a href="#meetup">Meetup</a>
+      <a href="#lessons">Book a Lesson</a>
       <a href="#claudes-brain">Resources</a>
       <a href="https://stpeteai.myshopify.com/" target="_blank" rel="noopener">Shop</a>
       <a href="#contact">Contact</a>
@@ -682,6 +752,47 @@ footer{background:var(--dark);border-top:1px solid var(--border-dark);padding:48
   </div>
 </section>
 
+<!-- Private Lessons -->
+<section id="lessons">
+  <div class="container">
+    <div class="lessons-grid">
+      <div class="lessons-left reveal">
+        <span class="tag tag-teal">1-on-1 Sessions</span>
+        <h2>Learn Directly<br>From Our Team.</h2>
+        <p>Book a private lesson with a St. Pete AI instructor. Whether you're new to AI or building your first agent pipeline, we'll meet you where you are and help you level up fast.</p>
+        <p>Sessions are <strong style="color:#fff">$40 / hour</strong>, held online, and tailored to your goals. Pick an open slot below and bring your questions, projects, or just curiosity.</p>
+      </div>
+      <div class="lessons-right reveal">
+        <div class="slot-list">
+          {% if slots %}
+            {% for s in slots %}
+            <div class="slot-card{% if s.booking %} booked{% endif %}">
+              <div class="slot-info">
+                <div class="slot-date-badge">
+                  <span class="slot-mo">{{ s.slot_date.strftime('%b') }}</span>
+                  <span class="slot-dy">{{ s.slot_date.strftime('%d') }}</span>
+                </div>
+                <div class="slot-meta">
+                  <h4>{{ s.start_time }}{% if s.duration %} &middot; {{ s.duration }} min{% endif %}</h4>
+                  <p>{% if s.staff_name %}with {{ s.staff_name }}{% else %}St. Pete AI Instructor{% endif %}{% if s.notes %}<br>{{ s.notes }}{% endif %}</p>
+                </div>
+              </div>
+              {% if s.booking %}
+                <span class="slot-booked-badge">Booked</span>
+              {% else %}
+                <button class="btn-book" onclick="openBook({{ s.id }})">Book This Slot</button>
+              {% endif %}
+            </div>
+            {% endfor %}
+          {% else %}
+            <p class="lessons-empty">No open slots right now — check back soon or <a href="#contact" style="color:var(--teal)">contact us</a> to request a session.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Claude's Brain Promo -->
 <section id="claudes-brain">
   <div class="container">
@@ -865,9 +976,21 @@ function closeModal(tier) {
   document.getElementById('modal-' + tier).classList.remove('open');
   document.body.style.overflow = '';
 }
+function openBook(id) {
+  document.getElementById('book-modal-' + id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeBook(id) {
+  document.getElementById('book-modal-' + id).classList.remove('open');
+  document.body.style.overflow = '';
+}
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     ['community','supporter','champion'].forEach(closeModal);
+    document.querySelectorAll('.modal-overlay.open').forEach(el => {
+      el.classList.remove('open');
+      document.body.style.overflow = '';
+    });
   }
 });
 

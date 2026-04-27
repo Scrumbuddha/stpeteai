@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Python / Flask
+__pycache__/
+instance/
+*.pyc
+*.db
+.env
+
+# Elastic Beanstalk
+.elasticbeanstalk/*

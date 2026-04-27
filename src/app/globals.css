@@ -1,26 +1,411 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ===== Elegant Carousel Styles ===== */
+
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.carousel-bg-wash {
+  position: absolute;
+  inset: 0;
+  transition: background 0.8s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.carousel-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 40px;
+  gap: 60px;
+  min-height: 600px;
+}
+
+.carousel-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.carousel-content-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Collection number */
+.carousel-collection-num {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.carousel-num-line {
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: #999;
+}
+
+.carousel-num-text {
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #999;
+  font-weight: 500;
+}
+
+/* Title */
+.carousel-title {
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: #1a1a1a;
+  margin: 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Subtitle */
+.carousel-subtitle {
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin: 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Description */
+.carousel-description {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #666;
+  max-width: 400px;
+  margin: 8px 0 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Transition states */
+.carousel-collection-num.visible,
+.carousel-title.visible,
+.carousel-subtitle.visible,
+.carousel-description.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.carousel-collection-num.transitioning,
+.carousel-title.transitioning,
+.carousel-subtitle.transitioning,
+.carousel-description.transitioning {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+/* Navigation arrows */
+.carousel-nav-arrows {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.carousel-arrow-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  transition: all 0.25s ease;
+}
+
+.carousel-arrow-btn:hover {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #fff;
+}
+
+/* Image container */
+.carousel-image-container {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+}
+
+.carousel-image-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  aspect-ratio: 3 / 4;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.carousel-image-frame.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.carousel-image-frame.transitioning {
+  opacity: 0;
+  transform: scale(0.97);
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.carousel-image-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Decorative frame corners */
+.carousel-frame-corner {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  transition: border-color 0.8s ease;
+}
+
+.carousel-frame-corner--tl {
+  top: -8px;
+  left: -8px;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+
+.carousel-frame-corner--br {
+  bottom: -8px;
+  right: -8px;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+
+/* Progress bar */
+.carousel-progress-bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px 40px;
+}
+
+.carousel-progress-item {
+  flex: 1;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  text-align: left;
+}
+
+.carousel-progress-track {
+  height: 2px;
+  background: #e0e0e0;
+  border-radius: 1px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.carousel-progress-fill {
+  height: 100%;
+  background: #ccc;
+  border-radius: 1px;
+  transition: width 0.1s linear;
+}
+
+.carousel-progress-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #999;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.carousel-progress-item.active .carousel-progress-label {
+  color: #333;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .carousel-wrapper {
+    min-height: auto;
+  }
+
+  .carousel-inner {
+    flex-direction: column;
+    padding: 40px 24px;
+    gap: 32px;
+    min-height: auto;
+  }
+
+  .carousel-title {
+    font-size: 2rem;
+  }
+
+  .carousel-description {
+    max-width: 100%;
+  }
+
+  .carousel-image-frame {
+    aspect-ratio: 4 / 3;
+  }
+
+  .carousel-progress-bar {
+    padding: 0 24px 24px;
+  }
+
+  .carousel-progress-label {
+    font-size: 10px;
+  }
 }

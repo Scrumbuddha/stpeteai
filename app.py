@@ -27,6 +27,7 @@ ALLOWED_TIERS = {'community', 'supporter', 'champion'}
 EMAIL_RE = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
 import boto3
+import anthropic
 
 AWS_REGION   = os.environ.get('AWS_REGION', 'us-east-1')
 FROM_EMAIL   = os.environ.get('FROM_EMAIL', 'info@stpeteai.org')
@@ -68,6 +69,75 @@ def send_booking_confirmation(booking, slot):
                   f"  Date:   {date_str}\n"
                   f"  Time:   {slot.start_time}\n")
     _ses_send(ADMIN_EMAIL, f"New booking: {booking.name} — {date_str} {slot.start_time}", admin_body)
+
+
+_HTML_TAG_RE = re.compile(r'<[^>]+>')
+
+def _strip_html(text):
+    return _HTML_TAG_RE.sub('', text).strip()
+
+
+def _run_matching(problem_text, domain, profiles, tools):
+    """Call Claude Haiku and return (member_matches, tool_matches).
+    Each match is a dict with keys: id, name, reason.
+    Returns ([], []) on any failure.
+    """
+    api_key = os.environ.get('ANTHROPIC_API_KEY', '')
+    if not api_key:
+        return [], []
+
+    profiles_block = '\n'.join(
+        f"  - ID {p.id}: {p.name} | Skills: {p.skills} | Bio: {p.bio[:200]}"
+        for p in profiles
+    ) or '  (none)'
+
+    tools_block = '\n'.join(
+        f"  - ID {t.id}: {t.name} | Tags: {t.tags} | Desc: {t.description[:200]}"
+        for t in tools
+    ) or '  (none)'
+
+    prompt = f"""A community member needs help. Match them to the best resources.
+
+Problem domain: {domain}
+Problem description: {problem_text}
+
+Available St. Pete AI members (ID | name | skills | bio):
+{profiles_block}
+
+Available AI tools (ID | name | tags | description):
+{tools_block}
+
+Return ONLY valid JSON with this exact structure — no prose, no markdown fences:
+{{
+  "members": [
+    {{"id": <integer>, "name": "<string>", "reason": "<one sentence>"}}
+  ],
+  "tools": [
+    {{"id": <integer>, "name": "<string>", "reason": "<one sentence>"}}
+  ]
+}}
+
+Rules:
+- Include up to 3 members and up to 3 tools, ranked by relevance.
+- If none are relevant, return empty arrays.
+- Only include IDs that appear in the lists above.
+- Reasons must be one sentence explaining why this match fits the problem.
+"""
+
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        message = client.messages.create(
+            model='claude-haiku-4-5-20251001',
+            max_tokens=512,
+            messages=[{'role': 'user', 'content': prompt}],
+        )
+        raw = message.content[0].text.strip()
+        data = __import__('json').loads(raw)
+        members = data.get('members', [])[:3]
+        tools   = data.get('tools',   [])[:3]
+        return members, tools
+    except Exception:
+        return [], []
 
 
 db = SQLAlchemy(app)

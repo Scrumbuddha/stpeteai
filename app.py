@@ -1,5 +1,6 @@
 import csv
 import io
+import json
 import os
 import re
 from datetime import datetime, date
@@ -132,7 +133,7 @@ Rules:
             messages=[{'role': 'user', 'content': prompt}],
         )
         raw = message.content[0].text.strip()
-        data = __import__('json').loads(raw)
+        data = json.loads(raw)
         members = data.get('members', [])[:3]
         tools   = data.get('tools',   [])[:3]
         return members, tools

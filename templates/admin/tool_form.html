@@ -1,0 +1,41 @@
+{% extends "admin/layout.html" %}
+{% block title %}{{ action }} Tool{% endblock %}
+{% block page_title %}{{ action }} Tool{% endblock %}
+{% block page_sub %}{% if tool %}Editing {{ tool.name }}{% else %}Add a new AI tool to the match pool{% endif %}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:600px">
+  <form method="post">
+    <div class="form-group">
+      <label for="name">Tool Name *</label>
+      <input type="text" id="name" name="name" required maxlength="200"
+        value="{{ tool.name if tool else '' }}" placeholder="e.g. Make.com">
+    </div>
+    <div class="form-group">
+      <label for="url">URL</label>
+      <input type="text" id="url" name="url" maxlength="500"
+        value="{{ tool.url if tool else '' }}" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" name="description" maxlength="2000"
+        placeholder="Brief description of what this tool does">{{ tool.description if tool else '' }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="tags">Tags (comma-separated)</label>
+      <input type="text" id="tags" name="tags" maxlength="500"
+        value="{{ tool.tags if tool else '' }}" placeholder="e.g. automation, no-code, workflow">
+    </div>
+    <div class="form-group">
+      <label class="form-check">
+        <input type="checkbox" name="active" {% if not tool or tool.active %}checked{% endif %}>
+        Active (visible in match results)
+      </label>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:24px">
+      <button class="btn btn-primary" type="submit">{{ action }} Tool</button>
+      <a class="btn btn-ghost" href="/admin/tools">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

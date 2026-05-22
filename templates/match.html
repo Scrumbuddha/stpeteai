@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Find AI Help — St. Pete AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--dark:#060d1a;--blue:#1a56db;--blue-lt:#3b82f6;--text:#e8edf8;--muted:#7a93c8;--border:rgba(255,255,255,.08);--card:rgba(255,255,255,.03)}
+body{background:var(--dark);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,13,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 5vw;height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-weight:800;font-size:1.1rem;color:#fff;text-decoration:none;letter-spacing:.02em}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .15s}
+.nav-links a:hover{color:#fff}
+.hero{padding:120px 5vw 60px;max-width:760px;margin:0 auto;text-align:center}
+.hero h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.15;margin-bottom:16px}
+.hero p{color:var(--muted);font-size:1.05rem;line-height:1.7;margin-bottom:40px}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px;max-width:620px;margin:0 auto 80px}
+.form-group{margin-bottom:20px;text-align:left}
+label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:6px;font-weight:500}
+input,select,textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);color:#fff;padding:11px 14px;border-radius:8px;font-size:.92rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--blue-lt)}
+select option{background:#0d1a2e}
+textarea{resize:vertical;min-height:120px}
+.char-hint{font-size:.75rem;color:var(--muted);margin-top:4px;text-align:right}
+.btn-submit{width:100%;background:var(--blue);color:#fff;border:none;padding:14px;border-radius:8px;font-size:1rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:background .15s;margin-top:8px}
+.btn-submit:hover{background:var(--blue-lt)}
+.flashes{max-width:620px;margin:0 auto 16px;display:flex;flex-direction:column;gap:8px}
+.flash{padding:11px 16px;border-radius:8px;font-size:.88rem;font-weight:500;border:1px solid}
+.flash.error{background:rgba(224,82,82,.12);border-color:rgba(224,82,82,.3);color:#f09090}
+.flash.info{background:rgba(30,86,219,.12);border-color:rgba(30,86,219,.3);color:#93b4fb}
+.apply-link{text-align:center;margin-top:16px;font-size:.85rem;color:var(--muted)}
+.apply-link a{color:var(--blue-lt);text-decoration:none}
+.apply-link a:hover{text-decoration:underline}
+.honeypot{display:none}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-logo" href="/">ST. PETE AI</a>
+  <div class="nav-links">
+    <a href="/#mission">Mission</a>
+    <a href="/#programs">Programs</a>
+    <a href="/#membership">Membership</a>
+    <a href="/match">Showcase</a>
+    <a href="/#contact">Contact</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Find AI Help for Your Problem</h1>
+  <p>Describe your challenge and we'll match you with St. Pete AI community members who can help — and AI tools that might already solve it.</p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flashes">
+      {% for cat, msg in messages %}
+        <div class="flash {{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<form class="form-card" method="post" action="/match">
+  <input class="honeypot" type="text" name="h_field" tabindex="-1" autocomplete="off">
+
+  <div class="form-group">
+    <label for="name">Your Name *</label>
+    <input type="text" id="name" name="name" required maxlength="120" placeholder="Jane Smith">
+  </div>
+
+  <div class="form-group">
+    <label for="email">Your Email *</label>
+    <input type="email" id="email" name="email" required maxlength="200" placeholder="jane@example.com">
+  </div>
+
+  <div class="form-group">
+    <label for="org">Organization <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+    <input type="text" id="org" name="org" maxlength="200" placeholder="Nonprofit name, business, school, etc.">
+  </div>
+
+  <div class="form-group">
+    <label for="domain">Domain / Category *</label>
+    <select id="domain" name="domain" required>
+      <option value="">Select a category...</option>
+      <option value="Healthcare">Healthcare</option>
+      <option value="Education">Education</option>
+      <option value="Retail">Retail</option>
+      <option value="Nonprofit">Nonprofit</option>
+      <option value="Government">Government</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="problem">Describe Your Problem *</label>
+    <textarea id="problem" name="problem" required minlength="20" maxlength="2000"
+      placeholder="What challenge are you trying to solve? The more detail you give, the better the match."></textarea>
+    <div class="char-hint">20 – 2,000 characters</div>
+  </div>
+
+  <button class="btn-submit" type="submit">Find Matches</button>
+</form>
+
+<div class="apply-link">
+  Are you an AI practitioner? <a href="/match/apply">Join the match pool</a>
+</div>
+</body>
+</html>

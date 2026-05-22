@@ -1,0 +1,48 @@
+{% extends "admin/layout.html" %}
+{% block title %}AI Tools{% endblock %}
+{% block page_title %}AI Tools{% endblock %}
+{% block page_sub %}Curated tools matched to community problems{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div></div>
+  <a class="btn btn-primary btn-sm" href="/admin/tools/new">+ Add Tool</a>
+</div>
+
+{% if tools %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th><th>Tags</th><th>Status</th><th>Added</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in tools %}
+      <tr>
+        <td>
+          <div style="font-weight:600;color:#fff">{{ t.name }}</div>
+          {% if t.url %}<div style="font-size:.78rem;color:#5c6680">{{ t.url[:60] }}</div>{% endif %}
+        </td>
+        <td style="color:#7a93c8;font-size:.82rem">{{ t.tags[:60] }}{% if t.tags|length > 60 %}…{% endif %}</td>
+        <td><span class="badge badge-{{ 'active' if t.active else 'inactive' }}">{{ 'Active' if t.active else 'Inactive' }}</span></td>
+        <td style="color:#5c6680;font-family:'Roboto Mono',monospace;font-size:.78rem">{{ t.created_at.strftime('%b %d, %Y') }}</td>
+        <td>
+          <a class="btn btn-ghost btn-sm" href="/admin/tools/{{ t.id }}/edit">Edit</a>
+          {% if t.active %}
+          <form method="post" action="/admin/tools/{{ t.id }}/deactivate" style="display:inline;margin-left:6px">
+            <button class="btn btn-danger btn-sm" type="submit">Deactivate</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card">
+  <p style="color:#5c6680;font-size:.88rem;padding:16px 0">No tools yet. <a href="/admin/tools/new" style="color:#5b9cf6">Add the first one.</a></p>
+</div>
+{% endif %}
+{% endblock %}

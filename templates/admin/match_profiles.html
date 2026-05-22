@@ -1,0 +1,82 @@
+{% extends "admin/layout.html" %}
+{% block title %}Match Pool{% endblock %}
+{% block page_title %}Match Pool{% endblock %}
+{% block page_sub %}Volunteer applications for the AI matching tool{% endblock %}
+
+{% block content %}
+<div class="section" style="margin-bottom:40px">
+  <div class="page-header">
+    <h1 style="font-size:1.1rem;color:var(--text-muted)">Pending Applications</h1>
+  </div>
+  {% if pending %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th><th>Email</th><th>Skills</th><th>Applied</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pending %}
+        <tr>
+          <td style="font-weight:600;color:#fff">{{ p.name }}</td>
+          <td style="color:#7a93c8">{{ p.email }}</td>
+          <td style="color:#7a93c8;font-size:.82rem">{{ p.skills[:80] }}{% if p.skills|length > 80 %}…{% endif %}</td>
+          <td style="color:#5c6680;font-family:'Roboto Mono',monospace;font-size:.78rem">{{ p.created_at.strftime('%b %d, %Y') }}</td>
+          <td>
+            <form method="post" action="/admin/match-profiles/{{ p.id }}/approve" style="display:inline">
+              <button class="btn btn-success btn-sm" type="submit">Approve</button>
+            </form>
+            <form method="post" action="/admin/match-profiles/{{ p.id }}/reject" style="display:inline;margin-left:6px">
+              <button class="btn btn-danger btn-sm" type="submit" onclick="return confirm('Reject and delete this application?')">Reject</button>
+            </form>
+          </td>
+        </tr>
+        {% if p.bio %}
+        <tr>
+          <td colspan="5" style="padding:4px 14px 16px;color:#5c6680;font-size:.82rem;line-height:1.5">{{ p.bio }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p style="color:#5c6680;font-size:.88rem;padding:16px 0">No pending applications.</p>
+  {% endif %}
+</div>
+
+<div class="section">
+  <div class="page-header">
+    <h1 style="font-size:1.1rem;color:var(--text-muted)">Active Members</h1>
+  </div>
+  {% if active %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th><th>Email</th><th>Skills</th><th>Approved</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in active %}
+        <tr>
+          <td style="font-weight:600;color:#fff">{{ p.name }}</td>
+          <td style="color:#7a93c8">{{ p.email }}</td>
+          <td style="color:#7a93c8;font-size:.82rem">{{ p.skills[:80] }}{% if p.skills|length > 80 %}…{% endif %}</td>
+          <td style="color:#5c6680;font-family:'Roboto Mono',monospace;font-size:.78rem">{{ p.created_at.strftime('%b %d, %Y') }}</td>
+          <td>
+            <form method="post" action="/admin/match-profiles/{{ p.id }}/reject" style="display:inline">
+              <button class="btn btn-danger btn-sm" type="submit" onclick="return confirm('Remove {{ p.name }} from the pool?')">Remove</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p style="color:#5c6680;font-size:.88rem;padding:16px 0">No active members in the pool yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

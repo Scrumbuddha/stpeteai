@@ -130,6 +130,38 @@ class LessonBooking(db.Model):
     slot = db.relationship('LessonSlot', backref=db.backref('booking', uselist=False, cascade='all, delete-orphan'))
 
 
+class MatchProfile(db.Model):
+    id         = db.Column(db.Integer, primary_key=True)
+    name       = db.Column(db.String(120), nullable=False)
+    email      = db.Column(db.String(200), nullable=False, unique=True)
+    bio        = db.Column(db.Text, default='')
+    skills     = db.Column(db.Text, default='')
+    active     = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class AiTool(db.Model):
+    id          = db.Column(db.Integer, primary_key=True)
+    name        = db.Column(db.String(200), nullable=False)
+    url         = db.Column(db.String(500), default='')
+    description = db.Column(db.Text, default='')
+    tags        = db.Column(db.Text, default='')
+    active      = db.Column(db.Boolean, default=True)
+    created_at  = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class MatchSubmission(db.Model):
+    id               = db.Column(db.Integer, primary_key=True)
+    name             = db.Column(db.String(120), nullable=False)
+    email            = db.Column(db.String(200), nullable=False)
+    org              = db.Column(db.String(200), default='')
+    domain           = db.Column(db.String(50), default='')
+    problem          = db.Column(db.Text, nullable=False)
+    matched_profiles = db.Column(db.Text, default='[]')
+    matched_tools    = db.Column(db.Text, default='[]')
+    created_at       = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 # ── Seed data ─────────────────────────────────────────────────────────────
 
 def seed_events():

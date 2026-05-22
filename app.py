@@ -508,6 +508,49 @@ def match():
                            claude_failed=claude_failed)
 
 
+@app.route('/match/apply', methods=['GET', 'POST'])
+@limiter.limit('3 per day', methods=['POST'],
+               error_message='Too many applications. Please try again tomorrow.')
+def match_apply():
+    if request.method == 'GET':
+        return render_template('match_apply.html', submitted=False)
+
+    if request.form.get('h_field', ''):
+        return render_template('match_apply.html', submitted=True)
+
+    name   = _strip_html(request.form.get('name',   '').strip())[:120]
+    email  = _strip_html(request.form.get('email',  '').strip())[:200]
+    bio    = _strip_html(request.form.get('bio',    '').strip())[:1000]
+    skills = _strip_html(request.form.get('skills', '').strip())[:500]
+
+    if not name or not email:
+        flash('Please fill in your name and email.', 'error')
+        return render_template('match_apply.html', submitted=False)
+    if not EMAIL_RE.match(email):
+        flash('Please enter a valid email address.', 'error')
+        return render_template('match_apply.html', submitted=False)
+
+    existing = MatchProfile.query.filter_by(email=email).first()
+    if existing:
+        flash('We already have an application for that email.', 'info')
+        return render_template('match_apply.html', submitted=False)
+
+    profile = MatchProfile(name=name, email=email, bio=bio, skills=skills)
+    db.session.add(profile)
+    db.session.commit()
+
+    _ses_send(ADMIN_EMAIL,
+              f"New match pool application: {name}",
+              f"New volunteer for the match pool!\n\n"
+              f"  Name:   {name}\n"
+              f"  Email:  {email}\n"
+              f"  Skills: {skills}\n\n"
+              f"Bio:\n{bio}\n\n"
+              f"Approve at: https://stpeteai.org/admin/match-profiles\n")
+
+    return render_template('match_apply.html', submitted=True)
+
+
 # ── Admin auth ────────────────────────────────────────────────────────────
 
 @app.route('/admin')
@@ -835,6 +878,89 @@ def admin_booking_delete(bid):
     db.session.commit()
     flash(f'Booking for {name} removed.', 'info')
     return redirect(url_for('admin_bookings'))
+
+
+# ── Admin match profiles ──────────────────────────────────────────────────
+
+@app.route('/admin/match-profiles')
+@admin_required
+def admin_match_profiles():
+    pending = MatchProfile.query.filter_by(active=False).order_by(MatchProfile.created_at.desc()).all()
+    active  = MatchProfile.query.filter_by(active=True).order_by(MatchProfile.created_at.desc()).all()
+    return render_template('admin/match_profiles.html', pending=pending, active=active)
+
+
+@app.route('/admin/match-profiles/<int:pid>/approve', methods=['POST'])
+@admin_required
+def admin_match_profile_approve(pid):
+    profile = MatchProfile.query.get_or_404(pid)
+    profile.active = True
+    db.session.commit()
+    flash(f'{profile.name} approved and added to the match pool.', 'success')
+    return redirect(url_for('admin_match_profiles'))
+
+
+@app.route('/admin/match-profiles/<int:pid>/reject', methods=['POST'])
+@admin_required
+def admin_match_profile_reject(pid):
+    profile = MatchProfile.query.get_or_404(pid)
+    db.session.delete(profile)
+    db.session.commit()
+    flash(f'Application from {profile.name} rejected and removed.', 'info')
+    return redirect(url_for('admin_match_profiles'))
+
+
+# ── Admin AI tools ────────────────────────────────────────────────────────
+
+@app.route('/admin/tools')
+@admin_required
+def admin_tools():
+    tools = AiTool.query.order_by(AiTool.active.desc(), AiTool.name).all()
+    return render_template('admin/tools.html', tools=tools)
+
+
+@app.route('/admin/tools/new', methods=['GET', 'POST'])
+@admin_required
+def admin_tool_new():
+    if request.method == 'POST':
+        tool = AiTool(
+            name        = request.form.get('name', '').strip()[:200],
+            url         = request.form.get('url', '').strip()[:500],
+            description = request.form.get('description', '').strip(),
+            tags        = request.form.get('tags', '').strip()[:500],
+            active      = 'active' in request.form,
+        )
+        db.session.add(tool)
+        db.session.commit()
+        flash(f'Tool "{tool.name}" added.', 'success')
+        return redirect(url_for('admin_tools'))
+    return render_template('admin/tool_form.html', tool=None, action='New')
+
+
+@app.route('/admin/tools/<int:tid>/edit', methods=['GET', 'POST'])
+@admin_required
+def admin_tool_edit(tid):
+    tool = AiTool.query.get_or_404(tid)
+    if request.method == 'POST':
+        tool.name        = request.form.get('name', '').strip()[:200]
+        tool.url         = request.form.get('url', '').strip()[:500]
+        tool.description = request.form.get('description', '').strip()
+        tool.tags        = request.form.get('tags', '').strip()[:500]
+        tool.active      = 'active' in request.form
+        db.session.commit()
+        flash(f'Tool "{tool.name}" updated.', 'success')
+        return redirect(url_for('admin_tools'))
+    return render_template('admin/tool_form.html', tool=tool, action='Edit')
+
+
+@app.route('/admin/tools/<int:tid>/deactivate', methods=['POST'])
+@admin_required
+def admin_tool_deactivate(tid):
+    tool = AiTool.query.get_or_404(tid)
+    tool.active = False
+    db.session.commit()
+    flash(f'Tool "{tool.name}" deactivated.', 'info')
+    return redirect(url_for('admin_tools'))
 
 
 # ── Bootstrap ─────────────────────────────────────────────────────────────

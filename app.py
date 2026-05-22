@@ -414,6 +414,100 @@ def book_lesson(slot_id):
     return redirect('/#lessons')
 
 
+# ── Match / Showcase ──────────────────────────────────────────────────────
+
+ALLOWED_DOMAINS = {'Healthcare', 'Education', 'Retail', 'Nonprofit', 'Government', 'Other'}
+
+
+@app.route('/match', methods=['GET', 'POST'])
+@limiter.limit('5 per hour', methods=['POST'],
+               error_message='Too many submissions. Please try again later.')
+def match():
+    if request.method == 'GET':
+        return render_template('match.html')
+
+    # Honeypot
+    if request.form.get('h_field', ''):
+        return render_template('match.html')
+
+    name    = _strip_html(request.form.get('name',    '').strip())[:120]
+    email   = _strip_html(request.form.get('email',   '').strip())[:200]
+    org     = _strip_html(request.form.get('org',     '').strip())[:200]
+    domain  = request.form.get('domain', 'Other').strip()
+    problem = _strip_html(request.form.get('problem', '').strip())[:2000]
+
+    if not name or not email:
+        flash('Please fill in your name and email.', 'error')
+        return render_template('match.html')
+    if not EMAIL_RE.match(email):
+        flash('Please enter a valid email address.', 'error')
+        return render_template('match.html')
+    if domain not in ALLOWED_DOMAINS:
+        domain = 'Other'
+    if len(problem) < 20:
+        flash('Please describe your problem in at least 20 characters.', 'error')
+        return render_template('match.html')
+
+    profiles = MatchProfile.query.filter_by(active=True).all()
+    tools    = AiTool.query.filter_by(active=True).all()
+
+    member_matches, tool_matches = _run_matching(problem, domain, profiles, tools)
+    had_pool = bool(profiles or tools)
+    api_key_set = bool(os.environ.get('ANTHROPIC_API_KEY'))
+    no_results = not member_matches and not tool_matches
+    claude_failed = had_pool and api_key_set and no_results
+
+    submission = MatchSubmission(
+        name=name, email=email, org=org, domain=domain, problem=problem,
+        matched_profiles=json.dumps(member_matches),
+        matched_tools=json.dumps(tool_matches),
+    )
+    db.session.add(submission)
+    db.session.commit()
+
+    # Email each matched member
+    profile_map = {p.id: p for p in profiles}
+    for m in member_matches:
+        p = profile_map.get(m.get('id'))
+        if p:
+            body = (
+                f"Hi {p.name},\n\n"
+                f"Someone from the St. Pete AI community needs your help!\n\n"
+                f"  Name:    {name}\n"
+                f"  Email:   {email}\n"
+                + (f"  Org:     {org}\n" if org else "")
+                + f"  Domain:  {domain}\n\n"
+                f"Problem:\n{problem}\n\n"
+                f"Reply directly to {email} to get in touch.\n\n"
+                f"-- St. Pete AI\nhttps://stpeteai.org/match\n"
+            )
+            _ses_send(p.email, f"St. Pete AI: Someone needs your help — {domain}", body)
+
+    if claude_failed:
+        _ses_send(ADMIN_EMAIL,
+                  "Match failure — manual follow-up needed",
+                  f"Claude failed for submission #{submission.id}.\n\n"
+                  f"Name: {name}\nEmail: {email}\nOrg: {org}\n"
+                  f"Domain: {domain}\nProblem:\n{problem}\n")
+
+    # Resolve matched profile/tool objects for template
+    tool_map = {t.id: t for t in tools}
+    resolved_members = [
+        {'profile': profile_map.get(m['id']), 'reason': m.get('reason', '')}
+        for m in member_matches if profile_map.get(m.get('id'))
+    ]
+    resolved_tools = [
+        {'tool': tool_map.get(t['id']), 'reason': t.get('reason', '')}
+        for t in tool_matches if tool_map.get(t.get('id'))
+    ]
+
+    return render_template('match_results.html',
+                           name=name,
+                           members=resolved_members,
+                           tools=resolved_tools,
+                           claude_failed=claude_failed)
+
+
 # ── Admin auth ────────────────────────────────────────────────────────────
 
 @app.route('/admin')

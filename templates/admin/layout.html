@@ -149,6 +149,12 @@ select option{background:var(--dark-card)}
     <a href="/admin/contacts" class="{% if request.endpoint == 'admin_contacts' %}active{% endif %}">
       <span class="ico">✉️</span> Messages
     </a>
+    <a href="/admin/match-profiles" class="{% if 'match_profile' in request.endpoint %}active{% endif %}">
+      <span class="ico">🤝</span> Match Pool
+    </a>
+    <a href="/admin/tools" class="{% if 'tool' in request.endpoint %}active{% endif %}">
+      <span class="ico">🛠</span> AI Tools
+    </a>
     <div class="nav-section">Site</div>
     <a href="/" target="_blank"><span class="ico">🌐</span> View Site</a>
   </nav>

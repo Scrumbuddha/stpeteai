@@ -723,9 +723,9 @@ footer{background:var(--dark);border-top:1px solid var(--border-dark);padding:48
           <span class="meetup-logo-label">Saint Petersburg AI<br>Collaborative Intelligence Group</span>
         </div>
         <h2>Meet. Build.<br>Collaborate.</h2>
-        <p>We gather in Saint Petersburg for hands-on workshops, live demos, and open conversation about AI. Whether you're writing code or just AI-curious, there's a seat at the table — 250 members and growing.</p>
+        <p>We gather in Saint Petersburg for hands-on workshops, live demos, and open conversation about AI. Whether you're writing code or just AI-curious, there's a seat at the table — 330 members and growing.</p>
         <div class="meetup-stats">
-          <div class="mstat"><span class="mstat-n">315</span><span class="mstat-l">Members</span></div>
+          <div class="mstat"><span class="mstat-n">332</span><span class="mstat-l">Members</span></div>
           <div class="mstat"><span class="mstat-n">4.9<span style="font-size:1.2rem">★</span></span><span class="mstat-l">Rating</span></div>
           <div class="mstat"><span class="mstat-n">23+</span><span class="mstat-l">Events</span></div>
         </div>
@@ -796,47 +796,64 @@ footer{background:var(--dark);border-top:1px solid var(--border-dark);padding:48
   </div>
 </section>
 
-<!-- Claude's Brain Promo -->
-<section id="claudes-brain">
+<!-- Resources -->
+<section id="claudes-brain" style="padding:80px 0;background:#eef1f7">
   <div class="container">
-    <div class="brain-grid">
-      <div class="brain-left reveal">
-        <span class="tag tag-blue">From Our Founder</span>
-        <h2 class="display">The Complete<br>Claude Code<br>Field Guide.</h2>
-        <p>St. Pete AI founder Mark published <em>Building Claude's Brain</em> — a practical, plain-English field guide to every layer that makes Claude Code smarter. Written for developers and vibe coders alike.</p>
-        <p>Seven chapters covering CLAUDE.md, Settings, MCP Servers, Sub-Agents, Knowledge Base, Slash Commands, and Skills — the architecture map used by hundreds of builders.</p>
-        <a class="btn-dark" href="https://www.claudesbrain.com" target="_blank" rel="noopener">Get the Guide at claudesbrain.com &rarr;</a>
+
+    <!-- Section header -->
+    <div style="text-align:center;margin-bottom:48px">
+      <span style="display:inline-block;background:rgba(30,95,196,.1);border:1px solid rgba(30,95,196,.3);border-radius:100px;padding:5px 14px;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:#1e5fc4;margin-bottom:16px">Community Resources</span>
+      <h2 style="font-family:'Roboto',sans-serif;font-size:clamp(2rem,4vw,2.8rem);font-weight:900;letter-spacing:-.02em;line-height:1;color:#141c2e;margin-bottom:12px;margin-top:0">AI TOOLS FOR<br><span style="color:#1e5fc4">EVERYONE.</span></h2>
+      <p style="color:#5c6680;font-size:1rem;max-width:520px;margin:0 auto">A curated directory of AI tools for the St. Pete community — from beginners to builders.</p>
+    </div>
+
+    <!-- Featured: Claude's Brain -->
+    <div style="background:#0d1220;border-radius:12px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;margin-bottom:48px;gap:24px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#0ca5a5;margin-bottom:8px">From Our Founder</div>
+        <div style="font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:6px">Building Claude's Brain</div>
+        <div style="font-size:.88rem;color:rgba(255,255,255,.5);max-width:400px">The complete field guide to every layer that makes Claude Code smarter. Written for developers and vibe coders alike.</div>
       </div>
-      <div class="brain-right reveal">
-        <div class="brain-img-wrap">
-          <img src="/static/images/radial-chart.jpg" alt="Claude's Brain — 7-Layer Architecture Diagram" loading="lazy">
-          <div class="brain-img-glow"></div>
-        </div>
-      <div class="brain-card">
-        <div class="brain-card-tag">New Release &middot; claudesbrain.com</div>
-        <h3>Building Claude's Brain</h3>
-        <div class="brain-card-sub">A complete field guide to every layer that makes Claude Code smarter</div>
-        <div class="chapters-list">
-          <div class="chapter-row"><span class="ch-num">01</span><span class="ch-name">CLAUDE.md — Identity &amp; Persistent Memory</span></div>
-          <div class="chapter-row"><span class="ch-num">02</span><span class="ch-name">Settings &amp; Config — Tool Allowlists</span></div>
-          <div class="chapter-row"><span class="ch-num">03</span><span class="ch-name">MCP Servers — Connect Any Tool</span></div>
-          <div class="chapter-row"><span class="ch-num">04</span><span class="ch-name">Sub-Agents — Your AI Agile Team</span></div>
-          <div class="chapter-row"><span class="ch-num">05</span><span class="ch-name">Knowledge Base — Domain Memory</span></div>
-          <div class="chapter-row"><span class="ch-num">06</span><span class="ch-name">Slash Commands — Packaged Workflows</span></div>
-          <div class="chapter-row"><span class="ch-num">07</span><span class="ch-name">Skills — Auto-Invoked Behaviors</span></div>
-        </div>
-        <div class="brain-price-row">
-          <div class="brain-price">$6.99</div>
-          <div class="brain-formats">
-            <span class="fmt-badge">PDF</span>
-            <span class="fmt-badge">DOCX</span>
-            <span class="fmt-badge">Instant</span>
+      <a href="https://www.claudesbrain.com" target="_blank" rel="noopener" style="background:#1e5fc4;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-size:.85rem;font-weight:600;white-space:nowrap;flex-shrink:0">Get the Guide &rarr;</a>
+    </div>
+
+    <!-- Category-grouped tool cards -->
+    {% if ai_tools %}
+      {% set ns = namespace(current_cat=None) %}
+      {% for tool in ai_tools %}
+        {% set cat = tool.category or 'Other' %}
+        {% if cat != ns.current_cat %}
+          {% if ns.current_cat is not none %}
+            </div>
+          {% endif %}
+          {% set ns.current_cat = cat %}
+          <div style="margin-bottom:32px">
+            <div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#5c6680;font-weight:600;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #c4ccdc">{{ cat }}</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+        {% endif %}
+            <div style="background:#fff;border:1px solid #c4ccdc;border-radius:8px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div>
+                <div style="font-weight:600;font-size:.92rem;color:#141c2e">{{ tool.name }}</div>
+                {% if tool.description %}
+                <div style="font-size:.78rem;color:#5c6680;margin-top:2px">{{ tool.description[:80] }}</div>
+                {% endif %}
+              </div>
+              {% if tool.url %}
+              <a href="{{ tool.url }}" target="_blank" rel="noopener" style="font-size:.78rem;color:#1e5fc4;text-decoration:none;font-weight:600;white-space:nowrap;flex-shrink:0">Visit &rarr;</a>
+              {% endif %}
+            </div>
+      {% endfor %}
+      {% if ns.current_cat is not none %}
           </div>
         </div>
-        <a class="brain-cta" href="https://www.claudesbrain.com" target="_blank" rel="noopener">Get the Ebook — One-Time Purchase</a>
-      </div><!-- /.brain-card -->
-      </div><!-- /.brain-right -->
+      {% endif %}
+    {% endif %}
+
+    <!-- Bottom CTA -->
+    <div style="text-align:center;margin-top:16px">
+      <a href="/match" style="font-size:.88rem;color:#1e5fc4;text-decoration:none;font-weight:600">Have a tool to suggest? Submit via the Showcase &rarr;</a>
     </div>
+
   </div>
 </section>
 
@@ -925,7 +942,7 @@ footer{background:var(--dark);border-top:1px solid var(--border-dark);padding:48
       </div>
       <div class="footer-col">
         <h5>Resources</h5>
-        <a href="#claudes-brain">Claude's Brain Guide</a>
+        <a href="#claudes-brain">Resources</a>
         <a href="https://www.claudesbrain.com" target="_blank" rel="noopener">claudesbrain.com</a>
       </div>
       <div class="footer-col">

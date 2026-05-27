@@ -33,3 +33,27 @@ def test_aitool_category_defaults_to_none(client):
         db.session.commit()
         fetched = AiTool.query.filter_by(name='NoCat').first()
         assert fetched.category is None
+
+
+def test_index_route_passes_ai_tools(client):
+    with app.app_context():
+        tool = AiTool(name='Gemini', url='https://gemini.google.com',
+                      description='Google AI', category='General AI', active=True)
+        db.session.add(tool)
+        db.session.commit()
+
+    resp = client.get('/')
+    assert resp.status_code == 200
+    assert b'Gemini' in resp.data
+
+
+def test_index_route_excludes_inactive_tools(client):
+    with app.app_context():
+        tool = AiTool(name='HiddenTool', url='https://example.com',
+                      description='inactive', category='Other', active=False)
+        db.session.add(tool)
+        db.session.commit()
+
+    resp = client.get('/')
+    assert resp.status_code == 200
+    assert b'HiddenTool' not in resp.data

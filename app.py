@@ -281,7 +281,11 @@ def index():
              .filter(LessonSlot.slot_date >= date.today())
              .order_by(LessonSlot.slot_date, LessonSlot.start_time)
              .all())
-    return render_template('index.html', events=events, slots=slots)
+    ai_tools = (AiTool.query
+                .filter_by(active=True)
+                .order_by(AiTool.category, AiTool.name)
+                .all())
+    return render_template('index.html', events=events, slots=slots, ai_tools=ai_tools)
 
 
 @app.route('/sitemap.xml')

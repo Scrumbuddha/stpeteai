@@ -993,10 +993,22 @@ def _ensure_database():
     except Exception as e:
         print(f'[db init] {e}')
 
+def _ensure_columns():
+    """Add new columns to existing tables that db.create_all() won't alter."""
+    from sqlalchemy import text, inspect
+    with app.app_context():
+        inspector = inspect(db.engine)
+        cols = [c['name'] for c in inspector.get_columns('ai_tool')]
+        if 'category' not in cols:
+            db.session.execute(text('ALTER TABLE ai_tool ADD COLUMN category VARCHAR(100)'))
+            db.session.commit()
+
+
 _ensure_database()
 
 with app.app_context():
     db.create_all()
+    _ensure_columns()
     seed_events()
 
 if __name__ == '__main__':

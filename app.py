@@ -218,6 +218,7 @@ class AiTool(db.Model):
     description = db.Column(db.Text, default='')
     tags        = db.Column(db.Text, default='')
     active      = db.Column(db.Boolean, default=True)
+    category    = db.Column(db.String(100), nullable=True)
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)
 
 
@@ -930,6 +931,7 @@ def admin_tool_new():
             description = request.form.get('description', '').strip(),
             tags        = request.form.get('tags', '').strip()[:500],
             active      = 'active' in request.form,
+            category    = request.form.get('category', '').strip()[:100] or None,
         )
         db.session.add(tool)
         db.session.commit()
@@ -948,6 +950,7 @@ def admin_tool_edit(tid):
         tool.description = request.form.get('description', '').strip()
         tool.tags        = request.form.get('tags', '').strip()[:500]
         tool.active      = 'active' in request.form
+        tool.category    = request.form.get('category', '').strip()[:100] or None
         db.session.commit()
         flash(f'Tool "{tool.name}" updated.', 'success')
         return redirect(url_for('admin_tools'))

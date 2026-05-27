@@ -297,7 +297,7 @@ def sitemap():
         ('https://www.stpeteai.org/#programs',       '2026-03-09', 'monthly', '0.8'),
         ('https://www.stpeteai.org/#membership',     '2026-03-09', 'monthly', '0.9'),
         ('https://www.stpeteai.org/#meetup',         '2026-03-09', 'weekly',  '0.8'),
-        ('https://www.stpeteai.org/#claudes-brain',  '2026-03-09', 'monthly', '0.7'),
+        ('https://www.stpeteai.org/#claudes-brain',  '2026-05-27', 'weekly',  '0.8'),
         ('https://www.stpeteai.org/#contact',        '2026-03-09', 'yearly',  '0.6'),
         ('https://www.stpeteai.org/match',  '2026-05-21', 'weekly',  '0.8'),
     ]

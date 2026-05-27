@@ -27,9 +27,26 @@
         value="{{ tool.tags if tool else '' }}" placeholder="e.g. automation, no-code, workflow">
     </div>
     <div class="form-group">
+      <label for="category">Category</label>
+      <input type="text" id="category" name="category" maxlength="100"
+        list="category-suggestions"
+        value="{{ tool.category if tool and tool.category else '' }}"
+        placeholder="e.g. General AI">
+      <datalist id="category-suggestions">
+        <option value="General AI">
+        <option value="Writing">
+        <option value="Image Generation">
+        <option value="Coding">
+        <option value="Automation">
+        <option value="Data &amp; Research">
+        <option value="Video">
+        <option value="Other">
+      </datalist>
+    </div>
+    <div class="form-group">
       <label class="form-check">
         <input type="checkbox" name="active" {% if not tool or tool.active %}checked{% endif %}>
-        Active (visible in match results)
+        Active (visible in match results and resources directory)
       </label>
     </div>
     <div style="display:flex;gap:12px;margin-top:24px">

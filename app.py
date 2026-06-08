@@ -301,6 +301,7 @@ def sitemap():
         ('https://www.stpeteai.org/#claudes-brain',  '2026-05-27', 'weekly',  '0.8'),
         ('https://www.stpeteai.org/#contact',        '2026-03-09', 'yearly',  '0.6'),
         ('https://www.stpeteai.org/match',  '2026-05-21', 'weekly',  '0.8'),
+        ('https://www.stpeteai.org/routines', '2026-06-08', 'weekly', '0.8'),
     ]
     xml = ['<?xml version="1.0" encoding="UTF-8"?>',
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']

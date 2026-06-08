@@ -641,7 +641,7 @@ Be specific and practical. Write for someone who may be new to Claude Code autom
         return jsonify({'plan': plan}), 200
     except Exception as e:
         app.logger.error('routines_generate error: %s', e)
-        return jsonify({'error': f'Plan generation failed: {e}'}), 200
+        return jsonify({'error': 'Plan generation is temporarily unavailable. Please try again shortly.'}), 200
 
 
 # ── Admin auth ────────────────────────────────────────────────────────────

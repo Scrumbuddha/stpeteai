@@ -3,6 +3,7 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from routines_data import ROUTINES, CATEGORIES, ROLES, TRIGGERS
+from app import app, db
 
 
 def test_routines_count():
@@ -41,9 +42,6 @@ def test_constants_correct():
     assert len(CATEGORIES) == 10
     assert len(ROLES) == 8
     assert len(TRIGGERS) == 3
-
-
-from app import app, db
 
 
 @pytest.fixture
@@ -111,3 +109,14 @@ def test_generate_returns_error_without_api_key(client, monkeypatch):
     assert resp.status_code == 200
     data = resp.get_json()
     assert 'error' in data
+
+
+def test_generate_rate_limited(client, monkeypatch):
+    monkeypatch.delenv('ANTHROPIC_API_KEY', raising=False)
+    payload = {'selected_ids': [1], 'role': 'Engineer', 'tools': '', 'goal': ''}
+    for _ in range(5):
+        client.post('/routines/generate', json=payload,
+                    content_type='application/json')
+    resp = client.post('/routines/generate', json=payload,
+                       content_type='application/json')
+    assert resp.status_code == 429

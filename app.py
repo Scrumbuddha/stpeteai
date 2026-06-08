@@ -5,7 +5,7 @@ import os
 import re
 from datetime import datetime, date
 from flask import (Flask, render_template, request, redirect, url_for,
-                   session, flash, Response)
+                   session, flash, Response, jsonify)
 from flask_sqlalchemy import SQLAlchemy
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -586,21 +586,21 @@ def routines():
 def routines_generate():
     data = request.get_json(silent=True) or {}
     selected_ids = data.get('selected_ids', [])
-    role  = (data.get('role') or '').strip()
-    tools = (data.get('tools') or '').strip()
-    goal  = (data.get('goal') or '').strip()
+    role  = (data.get('role') or '').strip()[:200]
+    tools = (data.get('tools') or '').strip()[:500]
+    goal  = (data.get('goal') or '').strip()[:500]
 
     if not selected_ids or not role:
-        return json.dumps({'error': 'Please select at least one routine and choose your role.'}), 400, {'Content-Type': 'application/json'}
+        return jsonify({'error': 'Please select at least one routine and choose your role.'}), 400
 
     id_set   = set(selected_ids)
-    selected = [r for r in ROUTINES if r['id'] in id_set]
+    selected = [r for r in ROUTINES if r['id'] in id_set][:20]
     if not selected:
-        return json.dumps({'error': 'No matching routines found.'}), 400, {'Content-Type': 'application/json'}
+        return jsonify({'error': 'No matching routines found.'}), 400
 
     api_key = os.environ.get('ANTHROPIC_API_KEY', '')
     if not api_key:
-        return json.dumps({'error': 'Plan generation is temporarily unavailable. Please try again shortly.'}), 200, {'Content-Type': 'application/json'}
+        return jsonify({'error': 'Plan generation is temporarily unavailable. Please try again shortly.'}), 200
 
     stories_block = '\n'.join(
         f"- [{r['id']}] {r['title']}: As a {r['as_a']}, I want {r['i_want']}, "
@@ -641,9 +641,9 @@ Be specific and practical. Write for someone who may be new to Claude Code autom
             messages=[{'role': 'user', 'content': prompt}],
         )
         plan = message.content[0].text.strip()
-        return json.dumps({'plan': plan}), 200, {'Content-Type': 'application/json'}
+        return jsonify({'plan': plan}), 200
     except Exception:
-        return json.dumps({'error': 'Plan generation is temporarily unavailable. Please try again shortly.'}), 200, {'Content-Type': 'application/json'}
+        return jsonify({'error': 'Plan generation is temporarily unavailable. Please try again shortly.'}), 200
 
 
 # ── Admin auth ────────────────────────────────────────────────────────────

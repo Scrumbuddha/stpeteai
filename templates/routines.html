@@ -335,8 +335,12 @@ document.getElementById('roleSelect').addEventListener('change', function() {
 document.getElementById('categoryPills').addEventListener('click', function(e) {
   const pill = e.target.closest('.filter-pill');
   if (!pill) return;
-  this.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  this.querySelectorAll('.filter-pill').forEach(p => {
+    p.classList.remove('active');
+    p.setAttribute('aria-checked', 'false');
+  });
   pill.classList.add('active');
+  pill.setAttribute('aria-checked', 'true');
   activeCat = pill.dataset.cat;
   applyFilters();
 });
@@ -345,8 +349,12 @@ document.getElementById('categoryPills').addEventListener('click', function(e) {
 document.getElementById('triggerPills').addEventListener('click', function(e) {
   const pill = e.target.closest('.filter-pill');
   if (!pill) return;
-  this.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  this.querySelectorAll('.filter-pill').forEach(p => {
+    p.classList.remove('active');
+    p.setAttribute('aria-checked', 'false');
+  });
   pill.classList.add('active');
+  pill.setAttribute('aria-checked', 'true');
   activeTrig = pill.dataset.trigger;
   applyFilters();
 });

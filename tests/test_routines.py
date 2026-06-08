@@ -69,9 +69,8 @@ def test_routines_page_shows_all_stories(client):
 def test_routines_filter_by_role(client):
     resp = client.get('/routines?role=Investor')
     assert resp.status_code == 200
-    # Role select should be pre-populated with 'Investor' selected
-    assert b'selected' in resp.data
-    assert b'Daily Portfolio Summary' in resp.data  # Always rendered (client-side filtering)
+    assert b'value="Investor" selected' in resp.data or b'selected>Investor' in resp.data
+    assert b'Daily Portfolio Summary' in resp.data
 
 
 def test_routines_filter_by_category(client):

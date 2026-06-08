@@ -29,6 +29,7 @@ EMAIL_RE = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
 import boto3
 import anthropic
+from routines_data import ROUTINES, CATEGORIES, ROLES, TRIGGERS
 
 AWS_REGION   = os.environ.get('AWS_REGION', 'us-east-1')
 FROM_EMAIL   = os.environ.get('FROM_EMAIL', 'info@stpeteai.org')
@@ -555,6 +556,94 @@ def match_apply():
               f"Approve at: https://stpeteai.org/admin/match-profiles\n")
 
     return render_template('match_apply.html', submitted=True)
+
+
+# ── Routines ──────────────────────────────────────────────────────────────
+
+@app.route('/routines')
+def routines():
+    role     = request.args.get('role', '').strip()
+    category = request.args.get('category', '').strip()
+
+    stories = ROUTINES
+    if role and role in ROLES:
+        stories = [r for r in stories if r['role'] == role]
+    if category and category in CATEGORIES:
+        stories = [r for r in stories if r['category'] == category]
+
+    return render_template('routines.html',
+                           routines=stories,
+                           all_routines=ROUTINES,
+                           categories=CATEGORIES,
+                           roles=ROLES,
+                           triggers=TRIGGERS,
+                           active_role=role,
+                           active_category=category)
+
+
+@app.route('/routines/generate', methods=['POST'])
+@limiter.limit('5 per hour', error_message='Too many requests. Please try again later.')
+def routines_generate():
+    data = request.get_json(silent=True) or {}
+    selected_ids = data.get('selected_ids', [])
+    role  = (data.get('role') or '').strip()
+    tools = (data.get('tools') or '').strip()
+    goal  = (data.get('goal') or '').strip()
+
+    if not selected_ids or not role:
+        return json.dumps({'error': 'Please select at least one routine and choose your role.'}), 400, {'Content-Type': 'application/json'}
+
+    id_set   = set(selected_ids)
+    selected = [r for r in ROUTINES if r['id'] in id_set]
+    if not selected:
+        return json.dumps({'error': 'No matching routines found.'}), 400, {'Content-Type': 'application/json'}
+
+    api_key = os.environ.get('ANTHROPIC_API_KEY', '')
+    if not api_key:
+        return json.dumps({'error': 'Plan generation is temporarily unavailable. Please try again shortly.'}), 200, {'Content-Type': 'application/json'}
+
+    stories_block = '\n'.join(
+        f"- [{r['id']}] {r['title']}: As a {r['as_a']}, I want {r['i_want']}, "
+        f"so that {r['so_that']}. Trigger: {r['trigger']}. Frequency: {r['frequency']}."
+        for r in selected
+    )
+
+    prompt = f"""You are helping a {role} at a community AI organization set up Claude Code automation routines.
+
+Their tools: {tools or 'not specified'}
+Their goal: {goal or 'not specified'}
+
+They have selected these {len(selected)} routines:
+{stories_block}
+
+Generate a personalized implementation plan with these exact sections:
+
+1. WHY THESE FIT YOU (2-3 sentences): Why this set of routines matches their role and goal.
+
+2. ROUTINE BREAKDOWN: For each selected routine, provide:
+   - What Claude does in this routine
+   - What data source or integration it needs
+   - What the output looks like
+   - Estimated setup time
+   - Estimated weekly time saved
+
+3. START HERE: Which 1-2 routines to implement first and why.
+
+4. QUICK-START CHECKLIST: 3-5 concrete action items to get the first routine running.
+
+Be specific and practical. Write for someone who may be new to Claude Code automation."""
+
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        message = client.messages.create(
+            model='claude-haiku-4-5-20251001',
+            max_tokens=1500,
+            messages=[{'role': 'user', 'content': prompt}],
+        )
+        plan = message.content[0].text.strip()
+        return json.dumps({'plan': plan}), 200, {'Content-Type': 'application/json'}
+    except Exception:
+        return json.dumps({'error': 'Plan generation is temporarily unavailable. Please try again shortly.'}), 200, {'Content-Type': 'application/json'}
 
 
 # ── Admin auth ────────────────────────────────────────────────────────────

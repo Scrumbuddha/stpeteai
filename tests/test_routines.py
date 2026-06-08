@@ -41,3 +41,73 @@ def test_constants_correct():
     assert len(CATEGORIES) == 10
     assert len(ROLES) == 8
     assert len(TRIGGERS) == 3
+
+
+from app import app, db
+
+
+@pytest.fixture
+def client():
+    app.config['TESTING'] = True
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    with app.app_context():
+        db.create_all()
+        yield app.test_client()
+        db.drop_all()
+
+
+def test_routines_page_loads(client):
+    resp = client.get('/routines')
+    assert resp.status_code == 200
+    assert b'Routines' in resp.data
+
+
+def test_routines_page_shows_all_stories(client):
+    resp = client.get('/routines')
+    assert b'Code Review Automation' in resp.data
+    assert b'Annual Business Plan Progress' in resp.data
+
+
+def test_routines_filter_by_role(client):
+    resp = client.get('/routines?role=Investor')
+    assert resp.status_code == 200
+    assert b'Daily Portfolio Summary' in resp.data
+    assert b'Code Review Automation' not in resp.data
+
+
+def test_routines_filter_by_category(client):
+    resp = client.get('/routines?category=Documentation')
+    assert resp.status_code == 200
+    assert b'README Update Suggestions' in resp.data
+    assert b'Daily Portfolio Summary' not in resp.data
+
+
+def test_generate_requires_selected_ids(client):
+    resp = client.post('/routines/generate',
+                       json={'selected_ids': [], 'role': 'Engineer',
+                             'tools': 'GitHub', 'goal': 'save time'},
+                       content_type='application/json')
+    assert resp.status_code == 400
+    data = resp.get_json()
+    assert 'error' in data
+
+
+def test_generate_requires_role(client):
+    resp = client.post('/routines/generate',
+                       json={'selected_ids': [1], 'role': '',
+                             'tools': 'GitHub', 'goal': 'save time'},
+                       content_type='application/json')
+    assert resp.status_code == 400
+    data = resp.get_json()
+    assert 'error' in data
+
+
+def test_generate_returns_error_without_api_key(client, monkeypatch):
+    monkeypatch.delenv('ANTHROPIC_API_KEY', raising=False)
+    resp = client.post('/routines/generate',
+                       json={'selected_ids': [1], 'role': 'Engineer',
+                             'tools': 'GitHub', 'goal': 'save time'},
+                       content_type='application/json')
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert 'error' in data

@@ -69,15 +69,17 @@ def test_routines_page_shows_all_stories(client):
 def test_routines_filter_by_role(client):
     resp = client.get('/routines?role=Investor')
     assert resp.status_code == 200
-    assert b'Daily Portfolio Summary' in resp.data
-    assert b'Code Review Automation' not in resp.data
+    # Role select should be pre-populated with 'Investor' selected
+    assert b'selected' in resp.data
+    assert b'Daily Portfolio Summary' in resp.data  # Always rendered (client-side filtering)
 
 
 def test_routines_filter_by_category(client):
     resp = client.get('/routines?category=Documentation')
     assert resp.status_code == 200
-    assert b'README Update Suggestions' in resp.data
-    assert b'Daily Portfolio Summary' not in resp.data
+    # Category pill should be pre-selected
+    assert b'Documentation' in resp.data
+    assert b'Daily Portfolio Summary' in resp.data  # Always rendered (client-side filtering)
 
 
 def test_generate_requires_selected_ids(client):

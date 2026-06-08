@@ -163,7 +163,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
     <!-- Left panel -->
     <aside class="routines-sidebar">
       <div class="sidebar-section">
-        <h4>Your Role</h4>
+        <label for="roleSelect" style="font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:10px">Your Role</label>
         <select class="sidebar-select" id="roleSelect">
           <option value="">All Roles</option>
           {% for r in roles %}<option value="{{ r }}" {% if active_role == r %}selected{% endif %}>{{ r }}</option>{% endfor %}
@@ -171,19 +171,19 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
       </div>
       <div class="sidebar-section">
         <h4>Category</h4>
-        <div class="filter-pills" id="categoryPills">
-          <span class="filter-pill {% if not active_category %}active{% endif %}" data-cat="">All</span>
+        <div class="filter-pills" id="categoryPills" role="radiogroup" aria-label="Category">
+          <span class="filter-pill {% if not active_category %}active{% endif %}" tabindex="0" role="radio" aria-checked="{{ 'true' if not active_category else 'false' }}" data-cat="">All</span>
           {% for cat in categories %}
-          <span class="filter-pill {% if active_category == cat %}active{% endif %}" data-cat="{{ cat }}">{{ cat }}</span>
+          <span class="filter-pill {% if active_category == cat %}active{% endif %}" tabindex="0" role="radio" aria-checked="{{ 'true' if active_category == cat else 'false' }}" data-cat="{{ cat }}">{{ cat }}</span>
           {% endfor %}
         </div>
       </div>
       <div class="sidebar-section">
         <h4>Trigger Type</h4>
-        <div class="filter-pills" id="triggerPills">
-          <span class="filter-pill active" data-trigger="">All</span>
+        <div class="filter-pills" id="triggerPills" role="radiogroup" aria-label="Trigger Type">
+          <span class="filter-pill active" tabindex="0" role="radio" aria-checked="true" data-trigger="">All</span>
           {% for t in triggers %}
-          <span class="filter-pill" data-trigger="{{ t }}">{{ t }}</span>
+          <span class="filter-pill" tabindex="0" role="radio" aria-checked="false" data-trigger="{{ t }}">{{ t }}</span>
           {% endfor %}
         </div>
       </div>
@@ -198,21 +198,24 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
           <input type="text" id="goalInput" placeholder="Reduce manual reporting time…">
         </div>
       </div>
-      <div class="selected-count" id="selectedCount">0 routines selected</div>
+      <div class="selected-count" id="selectedCount" aria-live="polite">0 routines selected</div>
       <button class="btn-generate" id="generateBtn" disabled onclick="generatePlan()">Generate My Plan</button>
     </aside>
 
     <!-- Right panel -->
     <div class="routines-main" id="routinesMain">
       {% set ns = namespace(current_cat=None) %}
-      {% for routine in routines %}
+      {% for routine in all_routines %}
         {% if routine.category != ns.current_cat %}
-          {% if ns.current_cat is not none %}</div></div>{% endif %}
+          {% if ns.current_cat is not none %}</div>{% endif %}
           {% set ns.current_cat = routine.category %}
           <div class="category-group" data-category="{{ routine.category }}">
           <div class="category-label">{{ routine.category }}</div>
         {% endif %}
         <div class="story-card"
+             tabindex="0"
+             role="checkbox"
+             aria-checked="false"
              data-id="{{ routine.id }}"
              data-role="{{ routine.role }}"
              data-category="{{ routine.category }}"
@@ -239,7 +242,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
   <!-- Results -->
   <div class="routines-results" id="resultsArea">
     <div class="results-tag">Your Personalized Plan</div>
-    <div class="results-content" id="resultsContent"></div>
+    <div class="results-content" id="resultsContent" aria-live="polite"></div>
   </div>
 </div>
 
@@ -291,13 +294,15 @@ function updateCount() {
 }
 
 function toggleCard(card) {
-  const id = parseInt(card.dataset.id);
+  const id = parseInt(card.dataset.id, 10);
   if (selected.has(id)) {
     selected.delete(id);
     card.classList.remove('selected');
+    card.setAttribute('aria-checked', 'false');
   } else {
     selected.add(id);
     card.classList.add('selected');
+    card.setAttribute('aria-checked', 'true');
   }
   updateCount();
 }
@@ -379,7 +384,11 @@ async function generatePlan() {
     });
     const data = await resp.json();
     if (data.error) {
-      resultsContent.innerHTML = '<span style="color:#f09090">' + data.error + '</span>';
+      const errSpan = document.createElement('span');
+      errSpan.style.color = '#f09090';
+      errSpan.textContent = data.error;
+      resultsContent.innerHTML = '';
+      resultsContent.appendChild(errSpan);
     } else {
       resultsContent.textContent = data.plan;
     }
@@ -387,6 +396,15 @@ async function generatePlan() {
     resultsContent.innerHTML = '<span style="color:#f09090">Network error — please try again.</span>';
   }
 }
+
+// Keyboard accessibility for cards and pills
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const card = e.target.closest('.story-card');
+  if (card) { e.preventDefault(); toggleCard(card); return; }
+  const pill = e.target.closest('.filter-pill');
+  if (pill) { e.preventDefault(); pill.click(); }
+});
 
 // Initialise filters from server-side active values (for bookmarked URLs)
 applyFilters();

@@ -566,20 +566,13 @@ def routines():
     role     = request.args.get('role', '').strip()
     category = request.args.get('category', '').strip()
 
-    stories = ROUTINES
-    if role and role in ROLES:
-        stories = [r for r in stories if r['role'] == role]
-    if category and category in CATEGORIES:
-        stories = [r for r in stories if r['category'] == category]
-
     return render_template('routines.html',
-                           routines=stories,
                            all_routines=ROUTINES,
                            categories=CATEGORIES,
                            roles=ROLES,
                            triggers=TRIGGERS,
-                           active_role=role,
-                           active_category=category)
+                           active_role=role if role in ROLES else '',
+                           active_category=category if category in CATEGORIES else '')
 
 
 @app.route('/routines/generate', methods=['POST'])
@@ -590,6 +583,9 @@ def routines_generate():
     role  = (data.get('role') or '').strip()[:200]
     tools = (data.get('tools') or '').strip()[:500]
     goal  = (data.get('goal') or '').strip()[:500]
+
+    if role and role not in ROLES:
+        role = ''
 
     if not selected_ids or not role:
         return jsonify({'error': 'Please select at least one routine and choose your role.'}), 400

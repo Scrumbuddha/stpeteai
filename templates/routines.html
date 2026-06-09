@@ -426,10 +426,10 @@ async function generatePlan() {
 function savePlan() {
   const text = document.getElementById('resultsContent').textContent;
   const role = document.getElementById('roleSelect').value || 'my';
-  const blob = new Blob([text], {type: 'text/plain'});
+  const blob = new Blob([text], {type: 'text/markdown'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `claude-routines-plan-${role.toLowerCase().replace(/\s+/g, '-')}.txt`;
+  a.download = `claude-routines-plan-${role.toLowerCase().replace(/\s+/g, '-')}.md`;
   a.click();
   URL.revokeObjectURL(a.href);
 }

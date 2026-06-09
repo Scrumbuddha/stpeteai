@@ -7,6 +7,7 @@
 <meta name="description" content="Browse 150 Claude Code automation routines by role and category. Get a personalized implementation plan for your workflow.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -96,8 +97,18 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
 .routines-results.visible{display:block}
 .routines-results::before{content:'';position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(30,95,196,.12),transparent 70%);pointer-events:none}
 .results-tag{font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:14px}
-.results-content{font-size:.92rem;color:#a8c0e8;line-height:1.75;white-space:pre-wrap;position:relative;z-index:1}
+.results-content{font-size:.92rem;color:#a8c0e8;line-height:1.75;position:relative;z-index:1}
+.results-content h1,.results-content h2{color:#fff;font-size:1.05rem;font-weight:700;margin:20px 0 8px;letter-spacing:-.01em}
+.results-content h3{color:#c8d8fc;font-size:.95rem;font-weight:600;margin:16px 0 6px}
+.results-content p{margin-bottom:10px}
+.results-content ul,.results-content ol{padding-left:20px;margin-bottom:10px}
+.results-content li{margin-bottom:4px}
 .results-content strong,.results-content b{color:#fff}
+.results-content em{color:#c8d8fc}
+.results-content hr{border:none;border-top:1px solid #1e2a40;margin:18px 0}
+.results-content code{background:rgba(91,156,246,.1);border-radius:3px;padding:1px 5px;font-family:'Roboto Mono',monospace;font-size:.82em}
+.select-all-link{font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;opacity:.8}
+.select-all-link:hover{opacity:1}
 .results-loading{display:flex;align-items:center;gap:12px;color:#7a93c8;font-size:.9rem}
 .spinner{width:18px;height:18px;border:2px solid rgba(91,156,246,.3);border-top-color:var(--sky);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -198,7 +209,10 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
           <input type="text" id="goalInput" placeholder="Reduce manual reporting time…">
         </div>
       </div>
-      <div class="selected-count" id="selectedCount" aria-live="polite">0 routines selected</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div class="selected-count" id="selectedCount" aria-live="polite" style="flex:1">0 routines selected</div>
+        <button class="select-all-link" id="selectAllBtn" onclick="selectAllVisible()">Select all</button>
+      </div>
       <button class="btn-generate" id="generateBtn" disabled onclick="generatePlan()">Generate My Plan</button>
     </aside>
 
@@ -289,11 +303,33 @@ const selected = new Set();
 let activeRole = '';
 let activeCat  = '';
 let activeTrig = '';
+let lastPlanText = '';
 
 function updateCount() {
   const n = selected.size;
   document.getElementById('selectedCount').textContent = n + ' routine' + (n === 1 ? '' : 's') + ' selected';
   document.getElementById('generateBtn').disabled = n === 0;
+  const visibleCards = [...document.querySelectorAll('.story-card:not(.hidden)')];
+  const allSelected = visibleCards.length > 0 && visibleCards.every(c => selected.has(parseInt(c.dataset.id, 10)));
+  document.getElementById('selectAllBtn').textContent = allSelected ? 'Clear all' : 'Select all';
+}
+
+function selectAllVisible() {
+  const visibleCards = [...document.querySelectorAll('.story-card:not(.hidden)')];
+  const allSelected = visibleCards.every(c => selected.has(parseInt(c.dataset.id, 10)));
+  visibleCards.forEach(card => {
+    const id = parseInt(card.dataset.id, 10);
+    if (allSelected) {
+      selected.delete(id);
+      card.classList.remove('selected');
+      card.setAttribute('aria-checked', 'false');
+    } else {
+      selected.add(id);
+      card.classList.add('selected');
+      card.setAttribute('aria-checked', 'true');
+    }
+  });
+  updateCount();
 }
 
 function toggleCard(card) {
@@ -326,6 +362,7 @@ function applyFilters() {
     if (visible) anyVisible = true;
   });
   document.getElementById('noStories').style.display = anyVisible ? 'none' : 'block';
+  updateCount();
 }
 
 const roleTools = {
@@ -411,6 +448,10 @@ async function generatePlan() {
         goal:  document.getElementById('goalInput').value,
       })
     });
+    if (resp.status === 429) {
+      resultsContent.innerHTML = '<span style="color:#f09090">Too many requests — you\'ve hit the rate limit. Please try again in an hour.</span>';
+      return;
+    }
     const data = await resp.json();
     if (data.error) {
       const errSpan = document.createElement('span');
@@ -419,7 +460,8 @@ async function generatePlan() {
       resultsContent.innerHTML = '';
       resultsContent.appendChild(errSpan);
     } else {
-      resultsContent.textContent = data.plan;
+      lastPlanText = data.plan;
+      resultsContent.innerHTML = marked.parse(data.plan);
       document.getElementById('savePlanBtn').style.display = 'inline-block';
     }
   } catch (err) {
@@ -428,7 +470,7 @@ async function generatePlan() {
 }
 
 function savePlan() {
-  const text = document.getElementById('resultsContent').textContent;
+  const text = lastPlanText;
   const role = document.getElementById('roleSelect').value || 'my';
   const blob = new Blob([text], {type: 'text/markdown'});
   const a = document.createElement('a');

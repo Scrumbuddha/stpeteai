@@ -328,10 +328,27 @@ function applyFilters() {
   document.getElementById('noStories').style.display = anyVisible ? 'none' : 'block';
 }
 
+const roleTools = {
+  'Engineer':            'GitHub, VS Code, Slack',
+  'DevOps':              'GitHub Actions, AWS, Terraform, Slack',
+  'Product Manager':     'Jira, Confluence, Slack',
+  'QA':                  'GitHub, Jira, TestRail',
+  'Manager':             'Slack, Jira, Google Workspace',
+  'Security':            'GitHub, AWS, Splunk',
+  'Investor':            'Excel, Bloomberg, Google Sheets',
+  'Small Business Owner':'Shopify, QuickBooks, Gmail',
+};
+
 // Role select
 document.getElementById('roleSelect').addEventListener('change', function() {
   activeRole = this.value;
   applyFilters();
+  const toolsInput = document.getElementById('toolsInput');
+  if (roleTools[this.value]) {
+    toolsInput.value = roleTools[this.value];
+  } else {
+    toolsInput.value = '';
+  }
 });
 
 // Category pills

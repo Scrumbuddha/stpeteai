@@ -3,6 +3,8 @@ import io
 import json
 import os
 import re
+import urllib.request
+import urllib.parse
 from datetime import datetime, date
 from flask import (Flask, render_template, request, redirect, url_for,
                    session, flash, Response, jsonify)
@@ -148,13 +150,14 @@ db = SQLAlchemy(app)
 # ── Models ────────────────────────────────────────────────────────────────
 
 class Member(db.Model):
-    id         = db.Column(db.Integer, primary_key=True)
-    name       = db.Column(db.String(120), nullable=False)
-    email      = db.Column(db.String(200), nullable=False)
-    tier       = db.Column(db.String(30), nullable=False)
-    message    = db.Column(db.Text, default='')
-    status     = db.Column(db.String(20), default='pending')  # pending / active / inactive
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    id               = db.Column(db.Integer, primary_key=True)
+    name             = db.Column(db.String(120), nullable=False)
+    email            = db.Column(db.String(200), nullable=False)
+    tier             = db.Column(db.String(30), nullable=False)
+    message          = db.Column(db.Text, default='')
+    status           = db.Column(db.String(20), default='pending')  # pending / active / inactive
+    paypal_order_id  = db.Column(db.String(50), nullable=True)
+    created_at       = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class Event(db.Model):
@@ -329,10 +332,67 @@ def robots():
     return Response(content, mimetype='text/plain')
 
 
+# ── PayPal helpers ────────────────────────────────────────────────────────
+
+PAYPAL_PRICES = {'supporter': '10.00', 'champion': '50.00'}
+
+def _paypal_base():
+    sandbox = os.environ.get('PAYPAL_SANDBOX', 'false').lower() == 'true'
+    return 'https://api-m.sandbox.paypal.com' if sandbox else 'https://api-m.paypal.com'
+
+def _paypal_token():
+    client_id = os.environ.get('PAYPAL_CLIENT_ID', '')
+    secret    = os.environ.get('PAYPAL_SECRET', '')
+    creds     = urllib.parse.quote(client_id) + ':' + urllib.parse.quote(secret)
+    import base64
+    auth = base64.b64encode(creds.encode()).decode()
+    req = urllib.request.Request(
+        f'{_paypal_base()}/v1/oauth2/token',
+        data=b'grant_type=client_credentials',
+        headers={'Authorization': f'Basic {auth}', 'Content-Type': 'application/x-www-form-urlencoded'},
+    )
+    with urllib.request.urlopen(req, timeout=10) as r:
+        return json.loads(r.read())['access_token']
+
+def _paypal_create_order(amount, member_id):
+    token = _paypal_token()
+    base_url = request.url_root.rstrip('/')
+    payload = json.dumps({
+        'intent': 'CAPTURE',
+        'purchase_units': [{'amount': {'currency_code': 'USD', 'value': amount}}],
+        'application_context': {
+            'return_url': f'{base_url}/join/success?member_id={member_id}',
+            'cancel_url': f'{base_url}/join/cancel?member_id={member_id}',
+            'brand_name': 'St. Pete AI',
+            'user_action': 'PAY_NOW',
+        },
+    }).encode()
+    req = urllib.request.Request(
+        f'{_paypal_base()}/v2/checkout/orders',
+        data=payload,
+        headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'},
+    )
+    with urllib.request.urlopen(req, timeout=10) as r:
+        data = json.loads(r.read())
+    for link in data.get('links', []):
+        if link['rel'] == 'approve':
+            return data['id'], link['href']
+    raise RuntimeError('No approval link in PayPal response')
+
+def _paypal_capture_order(order_id):
+    token = _paypal_token()
+    req = urllib.request.Request(
+        f'{_paypal_base()}/v2/checkout/orders/{order_id}/capture',
+        data=b'{}',
+        headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'},
+    )
+    with urllib.request.urlopen(req, timeout=10) as r:
+        return json.loads(r.read())
+
+
 @app.route('/join', methods=['POST'])
 @limiter.limit('5 per minute; 20 per hour', error_message='Too many requests. Please try again later.')
 def join():
-    # Honeypot — bots fill this hidden field, humans don't
     if request.form.get('h_field', ''):
         return redirect('/#membership')
 
@@ -352,12 +412,68 @@ def join():
     if tier not in ALLOWED_TIERS:
         tier = 'community'
 
-    member = Member(name=name, email=email, tier=tier, message=message)
+    member = Member(name=name, email=email, tier=tier, message=message, status='pending')
     db.session.add(member)
     db.session.commit()
 
-    labels = {'community': 'Community', 'supporter': 'Supporter', 'champion': 'Champion'}
-    flash(f"Welcome, {name}! Your {labels.get(tier, tier)} membership request has been received. We'll be in touch at {email}.", 'success')
+    if tier == 'community':
+        labels = {'community': 'Community', 'supporter': 'Supporter', 'champion': 'Champion'}
+        flash(f"Welcome, {name}! Your {labels[tier]} membership is confirmed.", 'success')
+        return redirect('/#membership')
+
+    # Paid tier — redirect to PayPal
+    try:
+        amount = PAYPAL_PRICES[tier]
+        order_id, approval_url = _paypal_create_order(amount, member.id)
+        member.paypal_order_id = order_id
+        db.session.commit()
+        return redirect(approval_url)
+    except Exception as e:
+        app.logger.error('PayPal create order error: %s', e)
+        flash('Payment setup failed. Please try again or contact us at info@stpeteai.org.', 'error')
+        return redirect('/#membership')
+
+
+@app.route('/join/success')
+def join_success():
+    member_id = request.args.get('member_id', type=int)
+    token     = request.args.get('token', '')  # PayPal order token
+    member    = Member.query.get(member_id) if member_id else None
+
+    if not member or not token:
+        flash('Payment confirmation failed. Please contact info@stpeteai.org.', 'error')
+        return redirect('/#membership')
+
+    if member.status == 'active':
+        flash(f"Welcome back, {member.name}! Your membership is already active.", 'success')
+        return redirect('/#membership')
+
+    try:
+        result = _paypal_capture_order(token)
+        status = result.get('status', '')
+        if status == 'COMPLETED':
+            member.status = 'active'
+            member.paypal_order_id = token
+            db.session.commit()
+            labels = {'supporter': 'Supporter', 'champion': 'Champion'}
+            flash(f"Thank you, {member.name}! Your {labels.get(member.tier, member.tier)} membership is now active.", 'success')
+        else:
+            flash('Payment was not completed. Please try again.', 'error')
+    except Exception as e:
+        app.logger.error('PayPal capture error: %s', e)
+        flash('Payment verification failed. Please contact info@stpeteai.org.', 'error')
+
+    return redirect('/#membership')
+
+
+@app.route('/join/cancel')
+def join_cancel():
+    member_id = request.args.get('member_id', type=int)
+    member    = Member.query.get(member_id) if member_id else None
+    if member and member.status == 'pending':
+        db.session.delete(member)
+        db.session.commit()
+    flash('Membership cancelled. You can join any time.', 'error')
     return redirect('/#membership')
 
 

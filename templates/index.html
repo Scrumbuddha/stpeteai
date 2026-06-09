@@ -418,9 +418,9 @@ footer{background:var(--dark);border-top:1px solid var(--border-dark);padding:48
         <textarea id="{{ tier }}-msg" name="message" placeholder="Tell us a bit about yourself or why you're joining…"></textarea>
       </div>
       <button type="submit" class="modal-submit {{ tier }}">
-        {% if tier == 'community' %}Join Free{% elif tier == 'supporter' %}Become a Supporter{% else %}Become a Champion{% endif %}
+        {% if tier == 'community' %}Join Free{% elif tier == 'supporter' %}Continue to PayPal — $10/mo{% else %}Continue to PayPal — $50/mo{% endif %}
       </button>
-      <p class="modal-note">We'll follow up at your email to confirm membership.{% if tier != 'community' %} Payment details will be shared separately.{% endif %}</p>
+      <p class="modal-note">{% if tier == 'community' %}Free — no payment required.{% else %}You'll be redirected to PayPal to complete your payment securely.{% endif %}</p>
     </form>
   </div>
 </div>

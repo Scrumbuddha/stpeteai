@@ -576,7 +576,7 @@ def routines():
 
 
 @app.route('/routines/generate', methods=['POST'])
-@limiter.limit('5 per hour', error_message='Too many requests. Please try again later.')
+@limiter.limit('20 per hour', error_message='Too many requests. Please try again later.')
 def routines_generate():
     data = request.get_json(silent=True) or {}
     selected_ids = data.get('selected_ids', [])

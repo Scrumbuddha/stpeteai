@@ -112,6 +112,23 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
 .spinner{width:18px;height:18px;border:2px solid rgba(91,156,246,.3);border-top-color:var(--sky);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* How to use modal */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(13,18,32,.75);z-index:500;align-items:center;justify-content:center;padding:24px}
+.modal-backdrop.open{display:flex}
+.modal-card{background:#fff;border-radius:14px;max-width:560px;width:100%;padding:36px;position:relative;max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:16px;right:18px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-muted);line-height:1}
+.modal-close:hover{color:var(--text)}
+.modal-title{font-size:1.15rem;font-weight:700;color:var(--text);margin-bottom:6px}
+.modal-subtitle{font-size:.85rem;color:var(--text-muted);margin-bottom:24px}
+.modal-steps{display:flex;flex-direction:column;gap:18px}
+.modal-step{display:flex;gap:14px;align-items:flex-start}
+.modal-step-num{width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;font-family:'Roboto Mono',monospace;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.modal-step-body h5{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:3px}
+.modal-step-body p{font-size:.83rem;color:var(--text-muted);line-height:1.5}
+.modal-tip{margin-top:24px;background:rgba(30,95,196,.06);border:1px solid rgba(30,95,196,.18);border-radius:8px;padding:12px 14px;font-size:.82rem;color:var(--blue);line-height:1.5}
+.how-to-link{background:none;border:none;font-family:'Roboto Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);cursor:pointer;padding:0;text-decoration:underline;opacity:.7}
+.how-to-link:hover{opacity:1;color:var(--blue)}
+
 /* No results */
 .no-stories{padding:40px 0;text-align:center;color:var(--text-muted);font-size:.9rem}
 
@@ -172,6 +189,10 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
 
     <!-- Left panel -->
     <aside class="routines-sidebar">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)">Filters</span>
+        <button class="how-to-link" onclick="document.getElementById('howToModal').classList.add('open')">How to use</button>
+      </div>
       <div class="sidebar-section">
         <label for="roleSelect" style="font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:10px">Your Role</label>
         <select class="sidebar-select" id="roleSelect">
@@ -259,6 +280,46 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
       <button id="savePlanBtn" onclick="savePlan()" style="display:none;font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;background:rgba(30,95,196,.12);border:1px solid rgba(30,95,196,.3);color:var(--blue);border-radius:6px;padding:5px 12px;cursor:pointer">&#8595; Save Plan</button>
     </div>
     <div class="results-content" id="resultsContent" aria-live="polite"></div>
+  </div>
+</div>
+
+<!-- How to use modal -->
+<div class="modal-backdrop" id="howToModal" onclick="if(event.target===this)this.classList.remove('open')" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-card">
+    <button class="modal-close" onclick="document.getElementById('howToModal').classList.remove('open')" aria-label="Close">&#x2715;</button>
+    <div class="modal-title" id="modalTitle">How to Use the Routines Generator</div>
+    <div class="modal-subtitle">Build a personalized Claude Code automation plan in 4 steps.</div>
+    <div class="modal-steps">
+      <div class="modal-step">
+        <div class="modal-step-num">1</div>
+        <div class="modal-step-body">
+          <h5>Filter by role or category</h5>
+          <p>Use the Role dropdown to show only routines relevant to your job. Use the Category and Trigger pills to narrow further — or leave everything on "All" to browse the full library.</p>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-num">2</div>
+        <div class="modal-step-body">
+          <h5>Select the routines that interest you</h5>
+          <p>Click any card to select it — it will highlight in blue. Pick as many as you like. Use <strong>Select all</strong> to grab everything currently visible. You can mix roles and categories.</p>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-num">3</div>
+        <div class="modal-step-body">
+          <h5>Add your context (optional)</h5>
+          <p>Tell Claude which tools you use (e.g. GitHub, Slack, Jira) and what you're trying to achieve. The more specific you are, the more tailored the plan will be. Selecting a role auto-fills the tools field.</p>
+        </div>
+      </div>
+      <div class="modal-step">
+        <div class="modal-step-num">4</div>
+        <div class="modal-step-body">
+          <h5>Generate and save your plan</h5>
+          <p>Click <strong>Generate My Plan</strong>. Claude will produce a personalized implementation plan with a routine breakdown, setup estimates, and a quick-start checklist. Download it as a Markdown file to keep.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-tip">&#128161; <strong>Tip:</strong> Start with 2–3 routines rather than selecting everything. A focused plan is easier to act on than a long one.</div>
   </div>
 </div>
 
@@ -480,8 +541,9 @@ function savePlan() {
   URL.revokeObjectURL(a.href);
 }
 
-// Keyboard accessibility for cards and pills
+// Keyboard accessibility for cards, pills, and modal
 document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') { document.getElementById('howToModal').classList.remove('open'); return; }
   if (e.key !== 'Enter' && e.key !== ' ') return;
   const card = e.target.closest('.story-card');
   if (card) { e.preventDefault(); toggleCard(card); return; }

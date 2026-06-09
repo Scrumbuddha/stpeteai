@@ -587,8 +587,8 @@ def routines_generate():
     if role and role not in ROLES:
         role = ''
 
-    if not selected_ids or not role:
-        return jsonify({'error': 'Please select at least one routine and choose your role.'}), 400
+    if not selected_ids:
+        return jsonify({'error': 'Please select at least one routine.'}), 400
 
     id_set   = set(selected_ids)
     selected = [r for r in ROUTINES if r['id'] in id_set][:20]
@@ -605,7 +605,9 @@ def routines_generate():
         for r in selected
     )
 
-    prompt = f"""You are helping a {role} at a community AI organization set up Claude Code automation routines.
+    role_desc = role if role else ', '.join({r['role'] for r in selected}) or 'community member'
+
+    prompt = f"""You are helping a {role_desc} at a community AI organization set up Claude Code automation routines.
 
 Their tools: {tools or 'not specified'}
 Their goal: {goal or 'not specified'}

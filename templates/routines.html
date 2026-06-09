@@ -199,7 +199,6 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
         </div>
       </div>
       <div class="selected-count" id="selectedCount" aria-live="polite">0 routines selected</div>
-      <div id="generateHint" style="font-size:.72rem;color:var(--text-muted);margin-bottom:6px;min-height:1em"></div>
       <button class="btn-generate" id="generateBtn" disabled onclick="generatePlan()">Generate My Plan</button>
     </aside>
 
@@ -293,19 +292,8 @@ let activeTrig = '';
 
 function updateCount() {
   const n = selected.size;
-  const role = document.getElementById('roleSelect').value;
   document.getElementById('selectedCount').textContent = n + ' routine' + (n === 1 ? '' : 's') + ' selected';
-  const hint = document.getElementById('generateHint');
-  if (n === 0 && !role) {
-    hint.textContent = 'Select a role and at least one routine.';
-  } else if (!role) {
-    hint.textContent = 'Choose your role above to generate.';
-  } else if (n === 0) {
-    hint.textContent = 'Select at least one routine.';
-  } else {
-    hint.textContent = '';
-  }
-  document.getElementById('generateBtn').disabled = n === 0 || !role;
+  document.getElementById('generateBtn').disabled = n === 0;
 }
 
 function toggleCard(card) {
@@ -344,7 +332,6 @@ function applyFilters() {
 document.getElementById('roleSelect').addEventListener('change', function() {
   activeRole = this.value;
   applyFilters();
-  updateCount();
 });
 
 // Category pills

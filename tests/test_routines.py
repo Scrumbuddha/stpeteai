@@ -91,14 +91,16 @@ def test_generate_requires_selected_ids(client):
     assert 'error' in data
 
 
-def test_generate_requires_role(client):
+def test_generate_works_without_role(client, monkeypatch):
+    monkeypatch.delenv('ANTHROPIC_API_KEY', raising=False)
     resp = client.post('/routines/generate',
                        json={'selected_ids': [1], 'role': '',
                              'tools': 'GitHub', 'goal': 'save time'},
                        content_type='application/json')
-    assert resp.status_code == 400
+    # Should reach the API call (not rejected at validation), failing only on missing key
+    assert resp.status_code == 200
     data = resp.get_json()
-    assert 'error' in data
+    assert 'error' in data  # missing API key error, not validation error
 
 
 def test_generate_returns_error_without_api_key(client, monkeypatch):

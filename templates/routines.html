@@ -242,7 +242,10 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
 
   <!-- Results -->
   <div class="routines-results" id="resultsArea">
-    <div class="results-tag">Your Personalized Plan</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="results-tag" style="margin-bottom:0">Your Personalized Plan</div>
+      <button id="savePlanBtn" onclick="savePlan()" style="display:none;font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;background:rgba(30,95,196,.12);border:1px solid rgba(30,95,196,.3);color:var(--blue);border-radius:6px;padding:5px 12px;cursor:pointer">&#8595; Save Plan</button>
+    </div>
     <div class="results-content" id="resultsContent" aria-live="polite"></div>
   </div>
 </div>
@@ -390,6 +393,7 @@ async function generatePlan() {
   const resultsContent = document.getElementById('resultsContent');
   resultsArea.classList.add('visible');
   resultsContent.innerHTML = '<div class="results-loading"><div class="spinner"></div>Claude is building your plan…</div>';
+  document.getElementById('savePlanBtn').style.display = 'none';
   resultsArea.scrollIntoView({behavior:'smooth', block:'start'});
 
   try {
@@ -412,10 +416,22 @@ async function generatePlan() {
       resultsContent.appendChild(errSpan);
     } else {
       resultsContent.textContent = data.plan;
+      document.getElementById('savePlanBtn').style.display = 'inline-block';
     }
   } catch (err) {
     resultsContent.innerHTML = '<span style="color:#f09090">Network error — please try again.</span>';
   }
+}
+
+function savePlan() {
+  const text = document.getElementById('resultsContent').textContent;
+  const role = document.getElementById('roleSelect').value || 'my';
+  const blob = new Blob([text], {type: 'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `claude-routines-plan-${role.toLowerCase().replace(/\s+/g, '-')}.txt`;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 // Keyboard accessibility for cards and pills

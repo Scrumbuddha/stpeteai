@@ -280,6 +280,28 @@ nav{position:sticky;top:0;z-index:100;background:rgba(238,241,247,.92);backdrop-
       <button id="savePlanBtn" onclick="savePlan()" style="display:none;font-family:'Roboto Mono',monospace;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;background:rgba(30,95,196,.12);border:1px solid rgba(30,95,196,.3);color:var(--blue);border-radius:6px;padding:5px 12px;cursor:pointer">&#8595; Save Plan</button>
     </div>
     <div class="results-content" id="resultsContent" aria-live="polite"></div>
+    <div id="donationBar" style="display:none;margin-top:28px;padding-top:20px;border-top:1px solid #1e2a40;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div style="font-size:.82rem;color:#7a93c8;line-height:1.5">
+        <strong style="color:#fff">Find this useful?</strong> St. Pete AI is a 501(c)(3) nonprofit. Your support keeps tools like this free for the community.
+      </div>
+      <div style="display:flex;gap:10px;flex-shrink:0;align-items:center;flex-wrap:wrap">
+        <select id="donateAmount" style="background:#0d1a2e;color:#c9d8f0;border:1px solid #1e2a40;border-radius:6px;padding:7px 10px;font-size:.8rem;cursor:pointer">
+          <option value="5.00">$5</option>
+          <option value="10.00" selected>$10</option>
+          <option value="25.00">$25</option>
+          <option value="50.00">$50</option>
+        </select>
+        <a id="donateBtn" href="/donate?amount=10.00"
+           style="display:inline-flex;align-items:center;gap:6px;background:#003087;color:#fff;font-weight:700;font-size:.8rem;padding:8px 14px;border-radius:6px;text-decoration:none;transition:opacity .15s"
+           onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          Donate via PayPal
+        </a>
+        <a href="/#membership" style="display:inline-flex;align-items:center;gap:6px;background:rgba(30,95,196,.15);color:var(--sky);font-weight:600;font-size:.8rem;padding:8px 14px;border-radius:6px;text-decoration:none;border:1px solid rgba(30,95,196,.3);transition:opacity .15s"
+           onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          Join St. Pete AI →
+        </a>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -496,6 +518,7 @@ async function generatePlan() {
   resultsArea.classList.add('visible');
   resultsContent.innerHTML = '<div class="results-loading"><div class="spinner"></div>Claude is building your plan…</div>';
   document.getElementById('savePlanBtn').style.display = 'none';
+  document.getElementById('donationBar').style.display = 'none';
   resultsArea.scrollIntoView({behavior:'smooth', block:'start'});
 
   try {
@@ -524,11 +547,16 @@ async function generatePlan() {
       lastPlanText = data.plan;
       resultsContent.innerHTML = typeof marked !== 'undefined' ? marked.parse(data.plan) : data.plan.replace(/\n/g, '<br>');
       document.getElementById('savePlanBtn').style.display = 'inline-block';
+      document.getElementById('donationBar').style.display = 'flex';
     }
   } catch (err) {
     resultsContent.innerHTML = '<span style="color:#f09090">Network error — please try again.</span>';
   }
 }
+
+document.getElementById('donateAmount').addEventListener('change', function() {
+  document.getElementById('donateBtn').href = '/donate?amount=' + this.value;
+});
 
 function savePlan() {
   const text = lastPlanText;

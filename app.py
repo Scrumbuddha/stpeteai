@@ -466,6 +466,56 @@ def join_success():
     return redirect('/#membership')
 
 
+@app.route('/donate')
+def donate():
+    amount = request.args.get('amount', '5.00')
+    try:
+        float(amount)
+    except ValueError:
+        amount = '5.00'
+    try:
+        token = _paypal_token()
+        base_url = request.url_root.rstrip('/')
+        payload = json.dumps({
+            'intent': 'CAPTURE',
+            'purchase_units': [{'amount': {'currency_code': 'USD', 'value': amount},
+                                'description': 'Donation to St. Pete AI (501c3)'}],
+            'application_context': {
+                'return_url': f'{base_url}/donate/success',
+                'cancel_url': f'{base_url}/routines',
+                'brand_name': 'St. Pete AI',
+                'user_action': 'PAY_NOW',
+            },
+        }).encode()
+        req = urllib.request.Request(
+            f'{_paypal_base()}/v2/checkout/orders',
+            data=payload,
+            headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'},
+        )
+        with urllib.request.urlopen(req, timeout=10) as r:
+            data = json.loads(r.read())
+        for link in data.get('links', []):
+            if link['rel'] == 'approve':
+                return redirect(link['href'])
+        raise RuntimeError('No approval link')
+    except Exception as e:
+        app.logger.error('Donate PayPal error: %s', e)
+        flash('Donation setup failed. Please try again or contact info@stpeteai.org.', 'error')
+        return redirect('/routines')
+
+
+@app.route('/donate/success')
+def donate_success():
+    token = request.args.get('token', '')
+    if token:
+        try:
+            _paypal_capture_order(token)
+        except Exception as e:
+            app.logger.error('Donate capture error: %s', e)
+    flash('Thank you for your donation! St. Pete AI appreciates your support.', 'success')
+    return redirect('/routines')
+
+
 @app.route('/join/cancel')
 def join_cancel():
     member_id = request.args.get('member_id', type=int)

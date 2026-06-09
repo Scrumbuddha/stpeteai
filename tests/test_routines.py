@@ -7,7 +7,7 @@ from app import app, db
 
 
 def test_routines_count():
-    assert len(ROUTINES) == 150
+    assert len(ROUTINES) == 225
 
 
 def test_each_routine_has_required_keys():
@@ -39,8 +39,8 @@ def test_all_triggers_valid():
 
 
 def test_constants_correct():
-    assert len(CATEGORIES) == 10
-    assert len(ROLES) == 8
+    assert len(CATEGORIES) == 13
+    assert len(ROLES) == 11
     assert len(TRIGGERS) == 3
 
 
@@ -117,7 +117,7 @@ def test_generate_returns_error_without_api_key(client, monkeypatch):
 def test_generate_rate_limited(client, monkeypatch):
     monkeypatch.delenv('ANTHROPIC_API_KEY', raising=False)
     payload = {'selected_ids': [1], 'role': 'Engineer', 'tools': '', 'goal': ''}
-    for _ in range(5):
+    for _ in range(20):
         client.post('/routines/generate', json=payload,
                     content_type='application/json')
     resp = client.post('/routines/generate', json=payload,

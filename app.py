@@ -1207,9 +1207,13 @@ def _ensure_columns():
     from sqlalchemy import text, inspect
     with app.app_context():
         inspector = inspect(db.engine)
-        cols = [c['name'] for c in inspector.get_columns('ai_tool')]
-        if 'category' not in cols:
+        ai_tool_cols = [c['name'] for c in inspector.get_columns('ai_tool')]
+        if 'category' not in ai_tool_cols:
             db.session.execute(text('ALTER TABLE ai_tool ADD COLUMN category VARCHAR(100)'))
+            db.session.commit()
+        member_cols = [c['name'] for c in inspector.get_columns('member')]
+        if 'paypal_order_id' not in member_cols:
+            db.session.execute(text('ALTER TABLE member ADD COLUMN paypal_order_id VARCHAR(50)'))
             db.session.commit()
 
 

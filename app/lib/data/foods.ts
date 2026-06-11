@@ -35,6 +35,16 @@ export const foods: FoodItem[] = [
   { id: "popcorn-kernels", name: "Air-popped popcorn (kernels)", category: "Sides & Snacks", pricePerServing: 0.15, addedSugarG: 0, sodiumMg: 2, fiberG: 4, proteinG: 3 },
   { id: "fresh-berries-offseason", name: "Fresh berries (out of season)", category: "Sides & Snacks", pricePerServing: 1.25, addedSugarG: 0, sodiumMg: 1, fiberG: 4, proteinG: 1 },
   { id: "frozen-berries", name: "Frozen mixed berries", category: "Sides & Snacks", pricePerServing: 0.65, addedSugarG: 0, sodiumMg: 1, fiberG: 4, proteinG: 1 },
+  { id: "fruit-snacks", name: "Fruit-flavored gummy snacks", category: "Sides & Snacks", pricePerServing: 0.5, addedSugarG: 11, sodiumMg: 30, fiberG: 0, proteinG: 0 },
+  { id: "raisins-applesauce", name: "Raisin boxes or no-sugar applesauce cups", category: "Sides & Snacks", pricePerServing: 0.3, addedSugarG: 0, sodiumMg: 5, fiberG: 2, proteinG: 0 },
+  { id: "bottled-smoothie", name: "Bottled smoothie", category: "Drinks", pricePerServing: 2.5, addedSugarG: 18, sodiumMg: 50, fiberG: 2, proteinG: 2 },
+  { id: "homemade-smoothie", name: "Frozen fruit + yogurt smoothie (homemade)", category: "Drinks", pricePerServing: 0.85, addedSugarG: 0, sodiumMg: 60, fiberG: 3, proteinG: 6 },
+  { id: "frozen-pizza", name: "Frozen pizza", category: "Protein", pricePerServing: 1.75, addedSugarG: 4, sodiumMg: 720, fiberG: 2, proteinG: 11 },
+  { id: "tortilla-pizza", name: "Tortilla pizzas (tortilla + sauce + cheese)", category: "Protein", pricePerServing: 0.9, addedSugarG: 1, sodiumMg: 420, fiberG: 2, proteinG: 10 },
+  { id: "salad-kit", name: "Bagged salad kit", category: "Sides & Snacks", pricePerServing: 1.5, addedSugarG: 3, sodiumMg: 220, fiberG: 2, proteinG: 1 },
+  { id: "whole-romaine", name: "Whole romaine + homemade dressing", category: "Sides & Snacks", pricePerServing: 0.6, addedSugarG: 0, sodiumMg: 65, fiberG: 2, proteinG: 1 },
+  { id: "granola-bars", name: "Sweetened granola bars", category: "Breakfast", pricePerServing: 0.45, addedSugarG: 8, sodiumMg: 95, fiberG: 1, proteinG: 2 },
+  { id: "pb-banana-toast", name: "Peanut butter banana toast", category: "Breakfast", pricePerServing: 0.4, addedSugarG: 1, sodiumMg: 150, fiberG: 4, proteinG: 7 },
 ];
 
 export const swaps: Swap[] = [
@@ -92,5 +102,30 @@ export const swaps: Swap[] = [
     fromId: "fresh-berries-offseason",
     toId: "frozen-berries",
     rationale: "Frozen berries are picked ripe, equally nutritious, and roughly half the price year-round.",
+  },
+  {
+    fromId: "fruit-snacks",
+    toId: "raisins-applesauce",
+    rationale: "Same sweet lunchbox treat at almost half the price — real fruit, zero added sugar.",
+  },
+  {
+    fromId: "bottled-smoothie",
+    toId: "homemade-smoothie",
+    rationale: "A blender, frozen fruit, and plain yogurt make the same smoothie for about a third of the price — and skip 18g of added sugar.",
+  },
+  {
+    fromId: "frozen-pizza",
+    toId: "tortilla-pizza",
+    rationale: "Pizza night for half the price with under half the sodium — kids can build their own.",
+  },
+  {
+    fromId: "salad-kit",
+    toId: "whole-romaine",
+    rationale: "A whole head of romaine costs less than one kit and makes three salads. Oil + vinegar + salt beats the packet.",
+  },
+  {
+    fromId: "granola-bars",
+    toId: "pb-banana-toast",
+    rationale: "More protein and fiber for the same money, without the 8g of added sugar that wears off by mid-morning.",
   },
 ];

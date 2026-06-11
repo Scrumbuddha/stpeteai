@@ -2,11 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { recipes } from "@/lib/data/recipes";
+import { useLocale } from "@/lib/i18n/LocaleContext";
 
 const costFilters = [
-  { id: "all", label: "Any price", max: Infinity },
-  { id: "under1", label: "Under $1/serving", max: 1 },
-  { id: "under150", label: "Under $1.50/serving", max: 1.5 },
+  { id: "any", max: Infinity },
+  { id: "under1", max: 1 },
+  { id: "under150", max: 1.5 },
 ] as const;
 
 type CostFilterId = (typeof costFilters)[number]["id"];
@@ -14,7 +15,8 @@ type CostFilterId = (typeof costFilters)[number]["id"];
 const allTags = [...new Set(recipes.flatMap((r) => r.dietTags))].sort();
 
 export default function RecipesPage() {
-  const [cost, setCost] = useState<CostFilterId>("all");
+  const { t } = useLocale();
+  const [cost, setCost] = useState<CostFilterId>("any");
   const [tag, setTag] = useState<string | "all">("all");
   const [open, setOpen] = useState<string | null>(null);
 
@@ -35,11 +37,8 @@ export default function RecipesPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Budget Recipes</h1>
-        <p className="mt-1 text-sm text-stone-600">
-          Real meals, few ingredients, honest costs. &quot;No-stove&quot;
-          recipes need only a fridge or microwave.
-        </p>
+        <h1 className="text-2xl font-bold">{t("recipes.title")}</h1>
+        <p className="mt-1 text-sm text-stone-600">{t("recipes.subtitle")}</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -53,19 +52,19 @@ export default function RecipesPage() {
                 : "border-stone-300 bg-white text-stone-700 hover:border-green-600"
             }`}
           >
-            {c.label}
+            {t(`recipes.cost.${c.id}`)}
           </button>
         ))}
         <select
           value={tag}
           onChange={(e) => setTag(e.target.value)}
           className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-sm"
-          aria-label="Filter by diet tag"
+          aria-label={t("recipes.allDiets")}
         >
-          <option value="all">All diets</option>
-          {allTags.map((t) => (
-            <option key={t} value={t}>
-              {t}
+          <option value="all">{t("recipes.allDiets")}</option>
+          {allTags.map((tg) => (
+            <option key={tg} value={tg}>
+              {t(`tag.${tg}`)}
             </option>
           ))}
         </select>
@@ -87,17 +86,18 @@ export default function RecipesPage() {
                 <div>
                   <h2 className="font-semibold">{r.title}</h2>
                   <p className="text-sm text-stone-600">
-                    ~${r.costPerServing.toFixed(2)}/serving · {r.timeMinutes}{" "}
-                    min · serves {r.servings}
+                    ~${r.costPerServing.toFixed(2)}
+                    {t("recipes.perServing")} · {r.timeMinutes}{" "}
+                    {t("recipes.min")} · {t("recipes.serves", { n: r.servings })}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  {r.dietTags.map((t) => (
+                  {r.dietTags.map((tg) => (
                     <span
-                      key={t}
+                      key={tg}
                       className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-900"
                     >
-                      {t}
+                      {t(`tag.${tg}`)}
                     </span>
                   ))}
                   <span className="text-stone-400">{isOpen ? "▴" : "▾"}</span>
@@ -106,7 +106,9 @@ export default function RecipesPage() {
               {isOpen && (
                 <div className="mt-3 grid gap-4 border-t border-stone-100 pt-3 sm:grid-cols-2">
                   <div>
-                    <h3 className="text-sm font-semibold">Ingredients</h3>
+                    <h3 className="text-sm font-semibold">
+                      {t("recipes.ingredients")}
+                    </h3>
                     <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm text-stone-700">
                       {r.ingredients.map((i) => (
                         <li key={i}>{i}</li>
@@ -114,7 +116,9 @@ export default function RecipesPage() {
                     </ul>
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold">Steps</h3>
+                    <h3 className="text-sm font-semibold">
+                      {t("recipes.steps")}
+                    </h3>
                     <ol className="mt-1 list-decimal space-y-0.5 pl-5 text-sm text-stone-700">
                       {r.steps.map((s) => (
                         <li key={s}>{s}</li>
@@ -130,7 +134,7 @@ export default function RecipesPage() {
 
       {results.length === 0 && (
         <p className="rounded-xl border border-stone-200 bg-white p-6 text-center text-stone-600">
-          No recipes match those filters yet.
+          {t("recipes.empty")}
         </p>
       )}
     </div>

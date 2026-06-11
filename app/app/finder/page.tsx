@@ -2,25 +2,20 @@
 
 import { useMemo, useState } from "react";
 import { places } from "@/lib/data/places";
+import { useLocale } from "@/lib/i18n/LocaleContext";
 import type { Place, PlaceType } from "@/lib/types";
 
-const typeLabels: Record<PlaceType, string> = {
-  grocery: "Grocery",
-  "farmers-market": "Farmers market",
-  "food-pantry": "Pantry / free food",
-  "community-garden": "Community garden",
-  "mobile-market": "Mobile market",
-};
+const placeTypes: PlaceType[] = [
+  "grocery",
+  "farmers-market",
+  "food-pantry",
+  "community-garden",
+  "mobile-market",
+];
 
 type BenefitFilter = "all" | "snap" | "wic" | "fab" | "free";
 
-const benefitFilters: { id: BenefitFilter; label: string }[] = [
-  { id: "all", label: "Everything" },
-  { id: "snap", label: "Takes SNAP/EBT" },
-  { id: "wic", label: "Takes WIC" },
-  { id: "fab", label: "Doubles SNAP (Fresh Access Bucks)" },
-  { id: "free", label: "Free food" },
-];
+const benefitFilters: BenefitFilter[] = ["all", "snap", "wic", "fab", "free"];
 
 function matchesBenefit(place: Place, filter: BenefitFilter): boolean {
   switch (filter) {
@@ -51,6 +46,7 @@ function Badge({ children, tone }: { children: string; tone: "green" | "blue" | 
 }
 
 export default function FinderPage() {
+  const { t } = useLocale();
   const [benefit, setBenefit] = useState<BenefitFilter>("all");
   const [type, setType] = useState<PlaceType | "all">("all");
 
@@ -65,26 +61,23 @@ export default function FinderPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Find healthy food near you</h1>
-        <p className="mt-1 text-sm text-stone-600">
-          St. Petersburg pilot area. Pantries are open to everyone unless noted
-          — no paperwork needed at most.
-        </p>
+        <h1 className="text-2xl font-bold">{t("finder.title")}</h1>
+        <p className="mt-1 text-sm text-stone-600">{t("finder.subtitle")}</p>
       </div>
 
       <div className="space-y-3">
         <div className="flex flex-wrap gap-2">
           {benefitFilters.map((f) => (
             <button
-              key={f.id}
-              onClick={() => setBenefit(f.id)}
+              key={f}
+              onClick={() => setBenefit(f)}
               className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${
-                benefit === f.id
+                benefit === f
                   ? "border-green-700 bg-green-700 text-white"
                   : "border-stone-300 bg-white text-stone-700 hover:border-green-600"
               }`}
             >
-              {f.label}
+              {t(`finder.benefit.${f}`)}
             </button>
           ))}
         </div>
@@ -92,19 +85,21 @@ export default function FinderPage() {
           value={type}
           onChange={(e) => setType(e.target.value as PlaceType | "all")}
           className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-          aria-label="Filter by place type"
+          aria-label={t("finder.type.all")}
         >
-          <option value="all">All place types</option>
-          {Object.entries(typeLabels).map(([value, label]) => (
+          <option value="all">{t("finder.type.all")}</option>
+          {placeTypes.map((value) => (
             <option key={value} value={value}>
-              {label}
+              {t(`type.${value}`)}
             </option>
           ))}
         </select>
       </div>
 
       <p className="text-sm text-stone-500">
-        {results.length} place{results.length === 1 ? "" : "s"} found
+        {results.length === 1
+          ? t("finder.resultOne")
+          : t("finder.resultMany", { n: results.length })}
       </p>
 
       <ul className="space-y-3">
@@ -117,7 +112,7 @@ export default function FinderPage() {
               <div>
                 <h2 className="font-semibold">{p.name}</h2>
                 <p className="text-sm text-stone-600">
-                  {typeLabels[p.type]} · {p.address}
+                  {t(`type.${p.type}`)} · {p.address}
                 </p>
                 <p className="mt-1 text-sm text-stone-600">🕐 {p.hours}</p>
               </div>
@@ -127,15 +122,15 @@ export default function FinderPage() {
                 rel="noopener noreferrer"
                 className="rounded-lg bg-green-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-800"
               >
-                Map ↗
+                {t("finder.map")}
               </a>
             </div>
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {p.isFree && <Badge tone="amber">Free</Badge>}
-              {p.acceptsSnap && <Badge tone="green">SNAP/EBT</Badge>}
-              {p.acceptsWic && <Badge tone="blue">WIC</Badge>}
+              {p.isFree && <Badge tone="amber">{t("badge.free")}</Badge>}
+              {p.acceptsSnap && <Badge tone="green">{t("badge.snap")}</Badge>}
+              {p.acceptsWic && <Badge tone="blue">{t("badge.wic")}</Badge>}
               {p.acceptsFreshAccessBucks && (
-                <Badge tone="green">Doubles SNAP $</Badge>
+                <Badge tone="green">{t("badge.fab")}</Badge>
               )}
             </div>
             {p.notes && <p className="mt-2 text-sm text-stone-700">{p.notes}</p>}
@@ -145,7 +140,7 @@ export default function FinderPage() {
 
       {results.length === 0 && (
         <p className="rounded-xl border border-stone-200 bg-white p-6 text-center text-stone-600">
-          Nothing matches those filters yet — try widening your search.
+          {t("finder.empty")}
         </p>
       )}
     </div>

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { foods, swaps } from "@/lib/data/foods";
+import { useLocale } from "@/lib/i18n/LocaleContext";
 import type { FoodItem } from "@/lib/types";
 
 const foodById = new Map(foods.map((f) => [f.id, f]));
@@ -14,15 +15,17 @@ function money(n: number): string {
 }
 
 function Delta({ from, to }: { from: FoodItem; to: FoodItem }) {
+  const { t } = useLocale();
   const savings = (from.pricePerServing - to.pricePerServing) * SERVINGS_PER_MONTH;
   const sugarCut = from.addedSugarG - to.addedSugarG;
   const sodiumCut = from.sodiumMg - to.sodiumMg;
   const lines = [
-    savings > 0.5 && `💰 Save about ${money(savings)}/month per person`,
-    sugarCut > 0 && `🍬 ${sugarCut}g less added sugar per serving`,
-    sodiumCut >= 100 && `🧂 ${sodiumCut}mg less sodium per serving`,
-    to.fiberG - from.fiberG >= 3 && `🌾 ${to.fiberG - from.fiberG}g more fiber`,
-    to.proteinG - from.proteinG >= 5 && `💪 ${to.proteinG - from.proteinG}g more protein`,
+    savings > 0.5 && t("swaps.save", { amount: money(savings) }),
+    sugarCut > 0 && t("swaps.sugar", { g: sugarCut }),
+    sodiumCut >= 100 && t("swaps.sodium", { mg: sodiumCut }),
+    to.fiberG - from.fiberG >= 3 && t("swaps.fiber", { g: to.fiberG - from.fiberG }),
+    to.proteinG - from.proteinG >= 5 &&
+      t("swaps.protein", { g: to.proteinG - from.proteinG }),
   ].filter(Boolean) as string[];
 
   return (
@@ -35,6 +38,7 @@ function Delta({ from, to }: { from: FoodItem; to: FoodItem }) {
 }
 
 export default function SwapsPage() {
+  const { t } = useLocale();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | "all">("all");
 
@@ -54,12 +58,8 @@ export default function SwapsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Smart Swaps</h1>
-        <p className="mt-1 text-sm text-stone-600">
-          Find what you already buy and see a cheaper, healthier stand-in. No
-          food is &quot;bad&quot; — these are just better deals for your body
-          and your wallet.
-        </p>
+        <h1 className="text-2xl font-bold">{t("swaps.title")}</h1>
+        <p className="mt-1 text-sm text-stone-600">{t("swaps.subtitle")}</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -67,9 +67,9 @@ export default function SwapsPage() {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search: soda, cereal, chips…"
+          placeholder={t("swaps.search")}
           className="w-full max-w-xs rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-          aria-label="Search foods"
+          aria-label={t("swaps.search")}
         />
         <div className="flex flex-wrap gap-2">
           {(["all", ...categories] as const).map((c) => (
@@ -82,7 +82,7 @@ export default function SwapsPage() {
                   : "border-stone-300 bg-white text-stone-700 hover:border-green-600"
               }`}
             >
-              {c === "all" ? "All" : c}
+              {c === "all" ? t("swaps.all") : t(`cat.${c}`)}
             </button>
           ))}
         </div>
@@ -98,14 +98,16 @@ export default function SwapsPage() {
               className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm"
             >
               <p className="text-sm text-stone-500">
-                Instead of{" "}
+                {t("swaps.insteadOf")}{" "}
                 <span className="font-medium text-stone-800">{from.name}</span>{" "}
-                ({money(from.pricePerServing)}/serving)
+                ({money(from.pricePerServing)}
+                {t("swaps.perServing")})
               </p>
               <p className="mt-1 text-lg font-semibold text-green-800">
-                Try {to.name}
+                {t("swaps.try")} {to.name}
                 <span className="ml-1 text-sm font-normal text-stone-500">
-                  ({money(to.pricePerServing)}/serving)
+                  ({money(to.pricePerServing)}
+                  {t("swaps.perServing")})
                 </span>
               </p>
               <Delta from={from} to={to} />
@@ -119,15 +121,11 @@ export default function SwapsPage() {
 
       {visibleSwaps.length === 0 && (
         <p className="rounded-xl border border-stone-200 bg-white p-6 text-center text-stone-600">
-          No swaps match &quot;{query}&quot; yet. We&apos;re adding more all the
-          time.
+          {t("swaps.empty", { q: query })}
         </p>
       )}
 
-      <p className="text-xs text-stone-500">
-        Monthly savings assume one serving per day. Prices are estimated
-        midpoints from local store surveys and will vary.
-      </p>
+      <p className="text-xs text-stone-500">{t("swaps.note")}</p>
     </div>
   );
 }

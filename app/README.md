@@ -13,6 +13,12 @@ Full product design: [`../docs/design/nourish-stpete-app-design.md`](../docs/des
   grocery items, with per-serving cost and nutrition deltas spelled out.
 - **Budget Recipes** (`/recipes`) — meals filtered by cost per serving and
   diet tags, including no-stove options.
+- **AI Food Coach** (`/coach`) — Claude-backed chat with tool access to the
+  data above. Requires `ANTHROPIC_API_KEY`; degrades gracefully without it.
+- **English/Spanish toggle** in the header. UI chrome is fully localized;
+  data content (place notes, swap rationales, recipes) is English-only for
+  now — translating it is a follow-up. The Coach replies in the user's
+  language automatically.
 
 ## Running
 

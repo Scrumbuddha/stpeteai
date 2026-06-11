@@ -12,6 +12,7 @@ const navLinks = [
   { href: "/finder", label: "Find Food" },
   { href: "/swaps", label: "Smart Swaps" },
   { href: "/recipes", label: "Budget Recipes" },
+  { href: "/coach", label: "Coach" },
 ];
 
 export default function RootLayout({

@@ -1,0 +1,117 @@
+import type { Recipe } from "../types";
+
+export const recipes: Recipe[] = [
+  {
+    id: "black-bean-rice-bowls",
+    title: "Black bean & rice bowls",
+    costPerServing: 0.95,
+    timeMinutes: 25,
+    servings: 4,
+    dietTags: ["vegetarian", "high-fiber"],
+    ingredients: [
+      "1 cup dry rice",
+      "2 cans black beans, drained",
+      "1 cup frozen corn",
+      "1 tsp cumin, salt, pepper",
+      "Optional: salsa, shredded cheese, lime",
+    ],
+    steps: [
+      "Cook rice according to package.",
+      "Warm beans and corn in a pan with cumin, salt, and pepper.",
+      "Serve beans over rice; top with salsa or cheese if you have it.",
+    ],
+  },
+  {
+    id: "sheet-pan-chicken-veg",
+    title: "Sheet-pan chicken thighs & vegetables",
+    costPerServing: 1.45,
+    timeMinutes: 45,
+    servings: 4,
+    dietTags: ["high-protein", "low-sugar"],
+    ingredients: [
+      "4 chicken thighs (family pack)",
+      "1 bag frozen mixed vegetables or 3 fresh carrots + 2 potatoes",
+      "2 tbsp oil, salt, pepper, garlic powder",
+    ],
+    steps: [
+      "Heat oven to 425°F.",
+      "Toss chicken and vegetables with oil and seasoning on one sheet pan.",
+      "Roast 35–40 minutes until chicken reaches 165°F.",
+    ],
+  },
+  {
+    id: "lentil-beef-tacos",
+    title: "Stretch-the-beef lentil tacos",
+    costPerServing: 1.1,
+    timeMinutes: 30,
+    servings: 6,
+    dietTags: ["high-fiber", "kid-friendly"],
+    ingredients: [
+      "1/2 lb ground beef",
+      "1 cup cooked lentils (or canned, drained)",
+      "Taco seasoning packet or chili powder + cumin",
+      "12 corn tortillas",
+      "Optional: lettuce, cheese, hot sauce",
+    ],
+    steps: [
+      "Brown the beef; drain.",
+      "Stir in lentils, seasoning, and a splash of water; simmer 5 minutes.",
+      "Serve in warmed tortillas with whatever toppings you have.",
+    ],
+  },
+  {
+    id: "veggie-egg-fried-rice",
+    title: "Use-it-up egg fried rice",
+    costPerServing: 0.8,
+    timeMinutes: 15,
+    servings: 4,
+    dietTags: ["vegetarian", "quick"],
+    ingredients: [
+      "3 cups cooked rice (day-old works best)",
+      "3 eggs",
+      "2 cups any frozen or leftover vegetables",
+      "2 tbsp soy sauce, 1 tbsp oil",
+    ],
+    steps: [
+      "Scramble eggs in an oiled pan; set aside.",
+      "Stir-fry vegetables 3 minutes, add rice and soy sauce, fry 3 more.",
+      "Fold the eggs back in and serve.",
+    ],
+  },
+  {
+    id: "tuna-white-bean-salad",
+    title: "No-cook tuna & white bean salad",
+    costPerServing: 1.2,
+    timeMinutes: 10,
+    servings: 3,
+    dietTags: ["high-protein", "no-stove"],
+    ingredients: [
+      "2 cans tuna in water, drained",
+      "1 can white beans, rinsed",
+      "2 tbsp oil, splash of vinegar or lemon, salt, pepper",
+      "Optional: chopped onion, celery, or whatever crunchy veg you have",
+    ],
+    steps: [
+      "Mix everything in a bowl.",
+      "Eat as-is, on bread, or over rice. Keeps 3 days in the fridge.",
+    ],
+  },
+  {
+    id: "overnight-oats",
+    title: "Peanut butter banana overnight oats",
+    costPerServing: 0.55,
+    timeMinutes: 5,
+    servings: 1,
+    dietTags: ["vegetarian", "no-stove", "kid-friendly"],
+    ingredients: [
+      "1/2 cup old-fashioned oats",
+      "1/2 cup milk (any kind)",
+      "1 tbsp peanut butter",
+      "1/2 banana, sliced",
+    ],
+    steps: [
+      "Stir everything in a jar or cup.",
+      "Refrigerate overnight; eat cold or microwave 60 seconds.",
+    ],
+  },
+];
